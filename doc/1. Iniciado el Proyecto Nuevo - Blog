@@ -1,0 +1,317 @@
+1. Iniciado el Proyecto Nuevo - Blog
+
+Proyecto Laravel de Productos
+
+El github del proyecto esta en:
+
+https://github.com/awais-vteams/laravel-crud-generator
+
+Como el proyecto se va a generar desde cero, lo hacemos con el asistente 
+
+Instalamos Laravel de manera global
+$ composer global config bin-dir --absolute
+
+Exportamos el Path
+  $ export PATH="$HOME/.composer/vendor/bin:$PATH"
+  $ export PATH="$HOME/.config/composer/vendor/bin:$PATH"
+
+Reiniciamos el shell
+	$ source ~/.bashrc}
+
+Probamos la verion de laravel
+	$ laravel --version
+
+Inicamos nuestro pporyecto
+	$ laravel new basicBlog
+
+Ingresamos a nuestro proyecto
+	$ cd basicBlog
+
+Creamos nuestra BD
+	$ mysql -u klvst3r -p
+
+	En el RDBMS creamos nuestra BD
+	> create database basicBlog
+
+Arrancamos en nuestro editor el proyecto y configuramos las variables de conexion con la bd previsamnete configurada y creada
+	
+	En el archivo .env
+		DB_CONNECTION=mysql
+		DB_HOST=127.0.0.1
+		DB_PORT=3306
+		DB_DATABASE=basicBlog
+		DB_USERNAME=klvst3r
+		DB_PASSWORD=desarrollo
+
+Se crea el model o y la migracion desde la terminal
+	$ php artisan make:model Product -m
+El parametro -m nos crea la migracion  en plural 
+
+	Tenemos un modelo llamado 
+		Product.php
+
+	-y una migracion llamada 
+		2024_11_24_191453_create_products_table.php
+
+Se agragan los siguientes campos a la migracion:
+
+	 Schema::create('products', function (Blueprint $table) {
+            $table->id();
+            $table->string('description', 100);
+            $table->double('price', 8,2);
+            $table->integer('stock');
+            $table->timestamps();
+        });
+
+Se corre la migracion
+	$ php artisan migrate	
+
+Vamos a la Bd y actualizamos para visualizar la información
+
+Vamos a instalar el paquete via composer
+	$ composer require ibex/crud-generator --dev
+
+Publicamos las configuraciones
+	$ php artisan vender:publish --tag=crud
+
+Se va a generar el crud rapidamente
+	$ php artisan make:crud products
+
+Como ya se tiene el modelo creado nos indica que ya existe sobreescribimos por que no cargamos nada a nuestro modelo.
+
+Con esto se han creado el modelo, las vistas, el layout
+
+Ahora podemos revisar las vistas:
+Exusten ya las plantillas Blade que se tienen 
+
+Revisamos las rutas:
+	/routes/web.php
+
+Llamamos a nuestro controlador
+	ProductController
+
+Se crea una ruta que desencadene el controlador
+	Route::resource('products', ProductController::class);
+
+El paquete ya realizo todos los metodos del crud que se puede adaptar o modificar.
+
+
+Para las vistas vamos a ocupar el paquete Laravel UI
+Las vistas:
+	composer require laravel/ui
+
+Para 
+	$ php artisan ui bootstrap
+
+Layout Blade 
+	$ php artisan ui bootstrap --auth
+
+Cuidando de no reemplarzar el controlador de los productos existentes
+
+
+Ahora solicita correr 
+
+$ npm install & npm run dev
+
+
+Ahora vamos a ejecuatr nuestra aplicacion php
+
+	$ php artisan serve -port=8000
+
+Probamos la aplicaocin en el browser:
+	localhost:8000/
+
+Vemos el registro
+	localhost:8000/register
+
+Si no toma los estilos lo que hacemos es:
+	$ npm run build
+
+Ahora volvemos a levantar la aplicacion y verificamos
+
+Registramos el usuarios:
+Name: Klvst3r
+email: klvst3r@gmail.com
+pass: desarrollo
+
+Lo que nos permitira hacer el registro y acceso al dashboard con el usuario registrado
+
+Ahora podemos acceder a nuestra plantilla de products:
+
+	localhost:8000/products
+
+me marca el siguiente error en laravel:
+Illuminate \ Contracts \ Container \ BindingResolutionException
+PHP 8.1.31
+10.48.24
+Target class [ProductController] does not exist.
+
+
+Solucion de error en la fusion de proyectos en github
+-----------------------
+
+
+El error "Target class [ProductController] does not exist" suele indicar que Laravel no puede encontrar el controlador especificado. 
+
+Esto puede ser causado por varias razones. ¿Podrías confirmar si el controlador ProductController está en la carpeta correcta (app/Http/Controllers)? Además, asegúrate de que el nombre del controlador esté bien escrito y que esté correctamente referenciado en las rutas. ¿Podemos delves un poco más en tu estructura de rutas para verificar cómo lo estás llamando?
+
+
+Lo solucione agregando los use respecctivos: 
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\HomeController;
+
+aunado a que se agrego la siguiente linea:
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Pero me indica una alerta subrayando Auth
+Auth::routes();
+Dentro de mi archivo routes/web.php
+
+Ahora, respecto al mensaje sobre Auth::routes(), la advertencia que mencionas probablemente esté relacionada con los cambios en Laravel 8 o superior, ya que a partir de Laravel 8, la manera en que se gestionan las rutas de autenticación ha cambiado ligeramente.
+Posible causa:
+
+En versiones de Laravel 8 y superiores, la función Auth::routes() ya no es necesaria si estás utilizando las rutas de autenticación predeterminadas. En lugar de eso, puedes utilizar el paquete de Laravel UI o Jetstream dependiendo de lo que hayas instalado para gestionar la autenticación.
+Solución 1: Usar Auth::routes() con Laravel UI
+
+Si quieres seguir utilizando el enfoque antiguo con Auth::routes(), asegúrate de tener instalado Laravel UI y sus dependencias.
+
+    Primero, instala Laravel UI si no lo has hecho:
+
+composer require laravel/ui
+
+Luego, genera las rutas de autenticación:
+
+php artisan ui bootstrap --auth
+
+Después de esto, deberías poder seguir utilizando Auth::routes() sin problemas.
+
+Volvemos a generar las utas de autenticacion:
+	i estás utilizando Laravel UI, asegúrate de instalarlo y generar las rutas de autenticación con
+	$ php artisan ui bootstrap --auth
+
+Ahora nuestro curd es totalmente funcional
+
+Creamos un nuevo producto
+
+Para subir al Github
+Creamos el repo de github
+Accesando a la carpeta y ejecutamos:
+
+	$ git remote add origin git@github.com:Klvst3r/crud_product.git
+	$ git branch -M main
+	$ git push -u origin main
+
+
+aunque ya teniendo el repositorio en Github, simplemente ejecutamos:
+
+echo "# crud_product" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin git@github.com:Klvst3r/basicBlog.git
+git push -u origin main
+
+Para nuestro caso hubo un conlicto en la fusion de historiales por lo que hicimos los siguiente:
+
+me genera este error al intentar subir mis cambios en git:
+git push origin main
+To github.com:Klvst3r/basicBlog.git
+ ! [rejected]        main -> main (non-fast-forward)
+error: failed to push some refs to 'github.com:Klvst3r/basicBlog.git'
+hint: Updates were rejected because the tip of your current branch is behind
+hint: its remote counterpart. Integrate the remote changes (e.g.
+hint: 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+ChatGPT said:
+ChatGPT
+
+El error indica que la rama main en tu repositorio local está desfasada con respecto a la rama main en el repositorio remoto. Esto ocurre porque hay cambios en el repositorio remoto que no tienes en tu copia local.
+Solución
+
+Para resolver este problema, sigue estos pasos:
+1. Sincroniza los cambios desde el repositorio remoto:
+
+Ejecuta el siguiente comando para combinar los cambios remotos con los locales:
+
+git pull origin main
+
+    Esto intentará fusionar los cambios del repositorio remoto en tu rama local.
+    Si hay conflictos, Git te avisará y tendrás que resolverlos manualmente antes de continuar.
+
+2. Resuelve los conflictos (si los hay):
+
+    Si Git detecta conflictos, verás un mensaje indicando los archivos con problemas.
+    Abre los archivos con conflictos y busca las marcas de Git (<<<<<<, =======, >>>>>>).
+    Modifica el contenido para que quede como deseas, luego guarda los cambios.
+
+Una vez resueltos los conflictos, añade los archivos resueltos:
+
+git add <archivo_con_conflicto>
+
+3. Confirma los cambios:
+
+Si hubo conflictos, confirma la resolución:
+
+git commit
+
+4. Sube los cambios al repositorio remoto:
+
+Una vez sincronizados los cambios, vuelve a intentar empujar tu rama al remoto:
+
+git push origin main
+
+Si no necesitas conservar tus cambios locales
+
+Si estás seguro de que los cambios locales no son importantes y solo quieres alinearte con el remoto, puedes sobrescribir tu rama local:
+
+    Restablece tu rama local para que coincida con la remota:
+
+git fetch origin
+git reset --hard origin/main
+
+Ahora deberías poder empujar sin problemas:
+
+    git push origin main
+
+Ten cuidado con esta opción, ya que sobrescribe todos los cambios locales no confirmados.
+You said:
+git pull origin main
+From github.com:Klvst3r/basicBlog
+ * branch            main       -> FETCH_HEAD
+fatal: refusing to merge unrelated histories
+ChatGPT said:
+ChatGPT
+
+El error fatal: refusing to merge unrelated histories ocurre porque el repositorio remoto y el repositorio local tienen historiales de Git que no están relacionados. Esto puede suceder si el repositorio remoto fue inicializado con un historial diferente al local o si se intentan combinar dos repositorios completamente separados.
+Solución: Permitir la fusión de historiales no relacionados
+
+    Ejecuta el comando git pull con la opción --allow-unrelated-histories para forzar la combinación de los historiales:
+
+git pull origin main --allow-unrelated-histories
+
+Si se producen conflictos durante la fusión:
+
+    Resuélvelos editando los archivos afectados.
+
+    Una vez resueltos, añade los archivos con conflictos:
+
+git add <archivo_con_conflicto>
+
+Luego confirma la fusión:
+
+    git commit
+
+Después de resolver los conflictos y confirmar, sube los cambios al repositorio remoto:
+
+    git push origin main
+
+¿Por qué ocurre este problema?
+
+Esto suele suceder si:
+
+    Inicializaste un nuevo repositorio local y lo vinculaste a un remoto que ya tenía contenido.
+    Subiste un proyecto sin sincronizar previamente el contenido del remoto.

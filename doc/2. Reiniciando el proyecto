@@ -1,0 +1,50 @@
+2. Reiniciando el proyecto
+
+Para la inicialización de un proyecto y tomando en consideración que ya tenemos nuestro proyecto creado.
+
+1. Composer
+Si no hemos instalado composer lo instalamos con el rpocedmiento respectivo.
+
+Posterior a ellos y ya estableciendolo de manera global. Lo que tenemos que hacer es instalar composer
+  $ install composer
+
+Si ya tenemos un poryecto alojado o ya iniciado lo que tenemos que hacer es actualizar las clases faltantes de composer
+  $ composer update
+
+2. Archivo de configuración
+  Para poder establecer nuestras variables de conexion a la Bd o configuración adicional debemos tener nuestro archivo de enviroment
+  Copiamos del archivo base
+    $ cp .env.example .env
+
+3. Debemos tener ya instalado Node y NPM
+  Si no lo tenemos instalado, lo hacemos de la siguiente manera:
+    $ sudo apt install nodejs
+    $ sudo apt install npm
+
+3.1 Instalamos npm en el proyecto
+  $ npm install
+
+4. Verificamos las instalaciones
+  $ nodejs -v
+  $ npm -v
+
+5. Inicializamos la llave n¿de nuestro proyecto
+  $ php artisan key:generate
+
+6. Cracmos las variables del front end
+  $ npm run dev
+  $npm run build
+
+7. Inicializamos las vrables del proyecto
+  $ composer dump-autoload
+
+Podremos verificar con esto el funcionamiento de nuestro proyecto inicializandolo y verificando la url en el navehador.
+
+  $ php artisan serve --port=7000
+
+8. Verificamos en el navegador
+  http://localhost:7000
+
+9. Podremos ahora modificar a voluntad las variables de conexion de la BD
+  nano .env
+    
