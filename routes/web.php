@@ -20,15 +20,34 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return 'Ruta Home';
+    //return 'Ruta Home';
+    return view('home');
 });
 
 Route::get('blog', function () {
-    return 'Listado de publicaciones';
+    $posts = [
+        ['id' => 1, 'title' => 'PHP', 'slug' => 'php'],
+        ['id' => 2, 'title' => 'Laravel', 'slug' => 'laravel']
+    ];
+
+    return view('blog', ['posts' => $posts]);
 });
 
 
-Route::get('buscar', function (Request $request) {
+/*Route::get('buscar', function (Request $request) {
     // consulta a BD
     return $request->all();
+});*/
+
+Route::get('blog/{slug}', function ($slug) {
+    $posts = [
+        'php' => ['id' => 1, 'title' => 'PHP', 'content' => 'Contenido sobre PHP'],
+        'laravel' => ['id' => 2, 'title' => 'Laravel', 'content' => 'Contenido sobre Laravel']
+    ];
+
+    if (!array_key_exists($slug, $posts)) {
+        abort(404, 'Post not found');
+    }
+
+    return view('post', ['post' => $posts[$slug]]);
 });
