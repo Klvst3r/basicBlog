@@ -49,3 +49,103 @@ return view('post', ['post' => $post]);
 Route::get('blog/{slug}', function ($slug) {
     // consulta en base de datos con el slug
 return view('post', ['post' => $slug]);            
+
+
+Inicial
+----
+
+web.php
+<?php
+
+use Illuminate\Http\Request; // Clase que significa solicitud o peticion 
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    //return 'Ruta Home';
+    return view('home');
+});
+
+Route::get('blog', function () {
+    $posts = [
+        ['id' => 1, 'title' => 'PHP', 'slug' => 'php'],
+        ['id' => 2, 'title' => 'Laravel', 'slug' => 'laravel']
+    ];
+
+    return view('blog', ['posts' => $posts]);
+});
+
+
+Route::get('blog/{slug}', function ($slug) {
+    $posts = [
+        'php' => ['id' => 1, 'title' => 'PHP', 'content' => 'Contenido sobre PHP'],
+        'laravel' => ['id' => 2, 'title' => 'Laravel', 'content' => 'Contenido sobre Laravel']
+    ];
+
+    if (!array_key_exists($slug, $posts)) {
+        abort(404, 'Post not found');
+    }
+
+    return view('post', ['post' => $posts[$slug]]);
+});
+
+
+
+Plantillas
+home.blade.php
+
+----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Home</h1>
+</body>
+</html>
+
+
+bog.blade.php
+-----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Listado</h1>
+
+    @foreach ($posts as $post)
+    <p>
+        <strong>{{ $post['id'] }}</strong>
+        <a href="{{ url('blog/' . $post['slug']) }}">
+            {{ $post['title'] }}
+        </a>
+    </p>
+
+    @endforeach
+</body>
+</html>
+
+post.bñade.php
+------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ $post['title'] }}</title>
+</head>
+<body>
+    <h1>{{ $post['title'] }}</h1>
+    <p>{{ $post['content'] }}</p>
+    <a href="{{ url('blog') }}">Volver al listado</a>
+</body>
+</html>

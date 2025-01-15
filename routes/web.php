@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     //return 'Ruta Home';
     return view('home');
-});
+})->name('home');
 
 Route::get('blog', function () {
     $posts = [
@@ -31,7 +31,7 @@ Route::get('blog', function () {
     ];
 
     return view('blog', ['posts' => $posts]);
-});
+})->name('blog');;
 
 
 /*Route::get('buscar', function (Request $request) {
@@ -50,4 +50,4 @@ Route::get('blog/{slug}', function ($slug) {
     }
 
     return view('post', ['post' => $posts[$slug]]);
-});
+})->name('post');;
