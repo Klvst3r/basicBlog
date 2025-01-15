@@ -1,0 +1,226 @@
+9. Como crear Modelos en Laravel
+
+Si les da error al escribir el comando
+
+php artisan migrate:refresh --seed
+
+Posiblemente nombraron mal sin querer al crear la migracion de la bases de datos de la clase anterior, es decir borren el archivo nuevo en la carpeta migrations y vuelvanlo a generar con el siguiente comando
+
+php artisan make:migration create_posts_table
+
+En ese archivo nuevo escriben otra vez todo lo que se va a injectar a la base de datos
+
+Asegurense de hacer drop a la base de datos para que se generen los nuevos archivos sin errores.
+
+de esa manera lo pude solucionar yo, espero que ayude a alguien este aporte
+
+
+
+Es más práctico usar esto para tira todas las tablas creadas y volver a ejecutar todo ya con el archivo de migrate modificado
+
+php artisan migrate:fresh
+
+
+En este caso cuando creo migraciones para evitar colocar el nombre “create_<nombre>_table” prefiero utilizar el comando de modelo diciéndole que cree la migración por si solo, recuerda que los modelos son nombrados en singular y las migraciones en plural, con el siguiente comendo Laravel lo hace por si solo:
+
+php artisan make:model Post -mfc
+
+crea al modelo Post, la migración create_posts_table, el factory Post y su respectivo controlador
+
+Para ver los distintos formatos que podemos usar con Faker: FakerPHP / Faker
+https://fakerphp.org/formatters/
+
+
+
+Hola! para los que al ejecutar el comando php artisan refresh --seed les sale el error "C:\xampp\htdocs\proyecto\vendor\laravel\framework\src\Illuminate\Database\Connection.php:5 PDOException::("SQLSTATE[22001]: String data, right truncated: 1406 Data too long for colu
+
+2 C:\xampp\htdocs\proyecto\vendor\laravel\framework\src\Illuminate\Database\Connection.php:5 PDOStatement::execute()"
+
+Es porque definimos el campo de la base de datos como "text" este tiene una longitud de solo 255 caracteres, y en el factory forzamos a la creacion del lorem ipsum con 2200 caracteres, solo tendriamos que cambiar la propiedad del campo de la tabla de "text" a "long Text" que permite mas caracteres, o directamente en el factory no utilizar 2200 caracteres sino 200 que esta en el rango de la longitud permitida, con fines de avanzar en el ejercicio
+
+
+
+Tenía el mismo error, pero la verdad esto no me funcionó. Lo que hice fue eliminar todo lo que había creado relacionado con post (la tabla, el modelo, el factory) y luego llame al modelo con el comando
+
+php artisan make:model -a Post
+
+Creo que hubiese funcionado más acorde al ejercicio haciendo
+
+php artisan make:model -fcm Post
+
+para que solo cree la migración, el factory y el controlador. Espero que a alguien más esta información le funcione.
+
+
+
+¡Wow! Me pareció interesante saber que dentro de un array se puede asignar una variable.
+
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Post>
+ */
+class PostFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition()
+    {
+        return [
+            "title" => $title = $this->facker->sentence(),
+            "slug" => \Illuminate\Support\Str::slug($title),
+            "body" => $this->faker->sentence()
+        ];
+    }
+}
+
+
+
+Hola! consegui esta joya https://laravel.com/api/9.x/index.html
+
+Faker tiene una función para generar un slug, puedes utilizar de la siguiente manera
+
+'slug' => $this->faker->slug()
+
+
+Quiero compartirles un modelo de organizacion que uso dentro de los modelos, es util para proyectos grandes, y pequenos tambien si quieres sobre organizar las cosas: . De esta manera tambien hacer un spoiler de las diferentes cosas que un modelo puede contener. .
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Backpack\CRUD\CrudTrait;
+
+class Tag extends Model {
+
+    use CrudTrait;
+    
+    /*
+    |--------------------------------------------------------------------------
+    | GLOBAL VARIABLES
+    |--------------------------------------------------------------------------
+    */
+    
+    protected $table = 'tags';
+    // protected $primaryKey = 'id';
+    // public $timestamps = false;
+    // protected $guarded = ['id'];
+    protected $fillable = [];
+    // protected $hidden = [];
+    // protected $dates = [];
+    
+    /*
+    |--------------------------------------------------------------------------
+    | FUNCTIONS
+    |--------------------------------------------------------------------------
+    */
+    
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONS
+    |--------------------------------------------------------------------------
+    */
+    
+    /*
+    |--------------------------------------------------------------------------
+    | SCOPES
+    |--------------------------------------------------------------------------
+    */
+    
+    /*
+    |--------------------------------------------------------------------------
+    | ACCESORS
+    |--------------------------------------------------------------------------
+    */
+    
+    /*
+    |--------------------------------------------------------------------------
+    | MUTATORS
+    |--------------------------------------------------------------------------
+    */
+}
+
+Nota: . ++Accesors y Mutators++, son un tema que creo se vera mas adelante, en la nueva sintaxis de laravel las dos cosas se escriben dentro de la misma funcion. El profesor italo llama a los accesors campos virtuales.
+
+
+¿Por qué la palabra Post la pusimos con P mayúscula? ¿Por qué utilizamos esa convención para el nombre del modelo?
+
+Porque es el nombre de una clase.
+
+
+
+aravel sigue ciertas convenciones, si creamos un Modelo por defecto intentará controlar su tabla en plural y minúsculas. Ejemplo: Modelo -> User Tabla que controla -> users . Modelo -> Category Tabla que controla -> categories . Pero si se tiene un modelo con un nombre fuera del inglés o no se quiere seguir esta convención, dentro del archivo Modelo se añade la siguiente línea de código:
+
+class Nivel extends Model
+{
+    use HasFactory;
+
+    -> protected $table = "entradas"; <- 
+//Sustituye 'entradas' por el nombre de la tabla que quieras controlas
+}
+
+Quedando: Modelo -> Nivel Tabla que controla -> entradas
+
+
+Para evitar muchos errores recomiendo ejecutar el siguiente comando:
+
+php artisan make:model <name> -mcf
+
+despues solo colocas todo lo necesario y podras ejecutar el comando:
+
+php artisan migrate:refresh --seed 
+
+
+Ejemplo de 1 Usuario 80 Registros
+
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+
+class DatabaseSeeder extends Seeder
+{
+    /**
+     * Seed the application's database.
+     *
+     * @return void
+     */
+    public function run()
+    {
+         \App\Models\User::factory(1)->create();
+         \App\Models\Post::factory(80)->create();
+    }
+}
+
+
+
+Tengo una duda con el
+
+migrate:refresh
+
+es la siguiente, en la clase anterior no me fije y el post lo escribiste en plural (posts)
+
+make:migration create_posts_table
+
+mientras que yo lo deje en singular
+
+make:migration create_post_table
+
+y cuando ejecuto el comando
+
+migrate:refrest--seed
+
+el comando esta tratando de buscar una tabla llamada posts(se ve reflejado en la consola un error de Not found proyecto.posts) la cual no tengo porque lo tengo en singular, como podría hacer que el comando
+
+ migrate:refrest 
+
+me busque la tabla proyecto.post y no proyecto.posts, o siempre las tablas que se crean deben ser en plural
+

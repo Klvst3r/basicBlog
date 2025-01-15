@@ -1,0 +1,153 @@
+8. Como crear Migraciones en Laravel
+
+
+
+Migraciones Qué son las migraciones
+
+Las migraciones son un mecanismo proporcionado por Laravel con el que podemos tener una especie de control de versiones sobre los cambios en la estructura de nuestra base de datos. Con las migraciones podemos diseñar esta estructura utilizando PHP y programación orientada a objetos, sin necesidad de escribir código SQL.
+
+Métodos de una migración Dentro de la clase de la migración encontramos dos métodos, up()y down(): El método down() nos permite revertir o «devolver» la operación realizada en el método up(). En el caso de CreateUsersTable, down()nos permitirá eliminar la tabla users  (utlizando el método dropIfExistsdel Facade Schema):
+
+Configurar la base de datos
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel9
+DB_USERNAME=username
+DB_PASSWORD=password
+
+Con el comando de Artisan migratepodemos ejecutar todas las migraciones:
+
+	$ php artisan migrate
+
+
+
+Todo lo que son migraciones, controladores y factories tienen su origen en los modelos es decir no tiene sentido tener una migración, un factory sino existe un modelo.
+
+Así que una forma facil de crear todo seria partir del modelo con un comando tipo:
+
+	$ php artisan make:model Post -mcf
+
+Lo que dice es creame un modelo Post, además su migración, además su controlador y además su factory. Con esto podriamos evitar algún error de dedo.
+
+Adicionalmente como todos los controladores o generalmente van a tener los mismos métodos de: listar, crear, actualizar y borrar podemos agregar algo asi:
+
+	$ php artisan make:model Post -mcf --resource
+
+Lo que hace adicionalmente es crear los métodos básicos de un crud en el controllador
+
+
+Los Migrations son como un control de versiones para nuestra base de datos, permitiendo a nosotros y a nuestro equipo definir el esquema (schema) de nuestra base de datos y poder compartirla.
+
+Como bien mencionamos, las migraciones se encargan de definir todas las tablas y atributos de nuestra base de datos desde nuestra aplicación de php, haciendo uso de una interfaz orientada a objetos (OOP).
+
+Una de sus mayores ventajas es que podemos tener diferentes versiones de nuestra base de datos, como si de git se tratace, además nos permite generar tablas para diferentes motores de base de datos (MySQL, MariaBD, SQLite, PostgreSQL, etc) haciendo uso del mismo lenguaje, php.
+
+
+Si estás haciendo la conexión con postgres recuerda
+
+    actualizar los datos del .env
+
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=my_app
+DB_USERNAME=myUser
+DB_PASSWORD=myPass
+
+Estos son los datos por defecto, igual no está demás confirmar que son los de tu base de datos.
+
+    Revisa que en el archivo php.ini de la carpeta php tenga descomentada la opción extension=pdo_pgsql y extension=pgsql
+
+extension=pdo_pgsql
+;extension=pdo_sqlite
+extension=pgsql
+;extension=shmop
+
+    Si te pasa como a mí que no me conectaba porque al abrir pgadmin me pedía una contraseña (era la misma que uso para conectarme al server), puedes desactivar esta opción en el archivo "config .py" (que se encuentra en la carpeta PgAdmin de tu postgres) así:
+
+Cambia este:
+
+MASTER_PASSWORD_REQUIRED = True
+
+por este:
+
+MASTER_PASSWORD_REQUIRED = False
+
+
+l colocar tus credenciales en el archivo .env de forma correcta, y guardar. Recuerda ejecutar el comando
+
+php artisan config:cache
+
+Para que al migrar se pueda leer tus accesos actuales.
+
+
+
+Las migraciones para ser creadas mas comodamente, se tienen que correr (correr de correr un comando) como: php artisan make:migration create_xxxs_table xxxs seria el nombre de la migracion. tiene que tener una S al final para indicar que es donde se guardan varios objetos ahi:
+
+la S la lleva para saber que este item el que lleva dentro todas las entidades de un tipo (del nombre que le hayas puesto, si le pones create_medias_table vas a guardar medias, tractores jaja), por ejemplo si queremos hacer una tabla de lenguajes le vamos a llamar "lenguajes" y no "lenguaje", "lenguaje" seria un item y los items van dentro de tablas... los items serian medias y las tablas serian un cajon enorme que sirve, segun su nombre "medias" el cual se lo ponemos para mantener una etica de trabajo para organizarse mejor; para guardar medias.
+
+del mismo modo podemos creamor la tabla lenguajes, donde almacenamos varios lenguaje (español ingles etc)
+
+si le ponemos el create_xxxxs_table simplemente nos va a ayudar a crear la tabla mas comodamente con lo basico que siempre suelen tener las tamblas, el timestamp y la id.
+
+en cambio si omitimos el "create_" y el "_table" tendremos que escribirlo nosotros
+
+No es perfecto este aporte, por favor corrijan o aporten otros ejemplos mas entendibles si lo ven posible. 
+
+ara quienes estén recibiendo el error PDOException::("could not find driver") con PostgreSQL en Windows tienen que activar las respectivas extensiones de PHP:
+
+    Ir a donde está instalado PHP y abrir el archivo php.ini.
+    Buscar las líneas que dicen extension=pdo_pgsql y extension=pgsql (podrían tener la extensión .so cada una, no fue mi caso).
+    Descomentar esas líneas (borrar el ; del inicio).
+
+
+
+Pregunta:
+
+Si más adelante quiero agregar una columna a la tabla ¿Debo crear una nueva migración?
+
+Existen varias maneras:
+
+1- Sería modificando tu migración y ejecutar php artisan migrate:refresh
+
+En caso de que tengas datos no genericos en tus tablas, hay otras maneras (que yo conozco) 1- Agregar una migración que agregue esos campos php artisan make:migration add_fields_to_users_table --table=users
+
+Así, en esa migración puedes aplicar php artisan migrate y ejecutara la modificación a la tabla.
+
+Mala practica, pero funciona: 2- Agregar manualmente la columna con tu Gestor de bases de datos, anexarlo a la migración y en todo caso agregarlo al modelo.
+
+
+
+
+Nombres de lo Schemas en Laravel
+
+Si bien por "convención" se usa la estructura create_migracion_table, también puedes usar:
+
+<php artisan make:migration  NombreMigracionComoQuiera 
+--table="nombre_tabla"> 
+
+Esto creara la migración con el nombre que quieras con la diferencia de que de una vez te creara la estructura del Schema
+
+
+Para ejecutar un archivo seeder en Laravel, utiliza el siguiente comando en tu terminal:
+
+php artisan db:seed --class=NombreDelSeeder
+
+Reemplaza NombreDelSeeder con el nombre de tu clase seeder. Asegúrate de que la base de datos esté configurada correctamente en el archivo .env antes de ejecutar el comando. Esto llenará las tablas de tu base de datos con los datos definidos en tu seeder, facilitando el proceso de pruebas y desarrollo.
+
+Comandos clase
+
+php artisan migrate
+php artisan make:migration name
+
+
+
+
+    Las migraciones son estructuras que permiten gestionar el esquema de la base de datos.
+
+    Permiten tener un historial de versiones de la base de datos.
+
+
+    

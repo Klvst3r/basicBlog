@@ -1,0 +1,454 @@
+11. Configuración de Relaciones entre Tablas con eloquent
+
+Se agrega la relación a la migración de reación de crear post
+
+
+Iniciando la migracion
+
+return new class extends Migration
+{
+	pubic function up(){
+		$table->id();
+		$table->string('title'),
+		$table->string('slug')->unique();
+		$table->text('body');
+
+		$table->timestamps();
+	}
+}
+
+
+Partiendo de esta migración vamos a crear una relación del usuaria hacia la creación de post o lo que pudiera entenderswe como que un usuario puede crear varios posts
+
+
+return new class extends Migration
+{
+	pubic function up(){
+		$table->id();
+
+		$table->unsignedBigInteger('user_id');
+		$table->foreing('user_id')->references('id')->on('user')
+
+		$table->string('title'),
+		$table->string('slug')->unique();
+		$table->text('body');
+
+		$table->timestamps();
+	}
+}
+
+Para el campo exista de tipo entero sin signo e indicar que a traves de este campo se crea la relación, este campo foraneo, ace referencia especificame nte al compo id que se encuenta de la tabla usuarios.
+
+Como se a agregado el campo se modifica el archivo facory
+
+
+
+El factory se modifica entonces:
+
+Class PostFactory extends Factory
+{
+	public function definition()
+	{
+		return [
+			'user_id' 	=> 1,
+			'title'		=> $title = $this->faker->sentence(),
+			'slud'		=> Str::slug($title),
+			'body'		=> $this->faker->text(2200),
+		];
+	}
+}
+
+Esto es 1 por que es un unico usuario de pruebas, con los datos semillas o datos falsos.
+
+
+Para ejecutar el comando de migraciones que borra todo y crea todo desde cero
+
+	$ php artisan migrate:refres --seed
+
+
+Una relación se crea para no estar duplicando cada ve z el nombre del usuario y slo se registra el id.
+
+
+En la vista se puede imprimir la información
+
+@xtends('template')
+
+@section('content')
+
+<h1>Listado</h1>
+
+@foreach ($post as $post)
+<p>
+	<strong> {{ $post->id}}</post>
+	<a href="{{ route('post', $post->slug }}">
+		{{ $post->title}}
+	</>
+	<br>
+
+	<span>{{ $post->user->name }}</span>
+</b>
+
+@endforeach
+
+{{  $posts->links() }}
+
+@endsection
+
+
+
+Como ejecutamos el proyecto marca error, y es que debe existir la reación en la tablam, para ello debo indicarlo
+
+Para ello
+
+En el modelo
+
+namespace App\Models;
+
+...
+
+class Post extends Model{
+	use HasFactory;
+
+	public function user(){
+		return $this->belongTo(User::class);
+	}
+}
+
+
+Al crear una relación no solo importa que se especifique los cambios en la migración, sino que tabien indicarle a Laravel como es la relación entre tablas.
+
+
+
+
+
+
+
+Comebtarios:
+------------
+
+Siguiendo las convenciones de Laravel podemos reducir más el código.
+
+$table->foreign('user_id')
+                ->references('id')
+                ->on('users');
+
+// Es lo mismo a 
+
+$table->foreign('user_id')->constrained();
+
+¿Por que?, estamos siguiendo la convención de user_id, por lo que Laravel ya sabe que la tabla en relación es users por el mismo nombre. Si fuera el campo target_user_id allí si solo se podrá usar la primer opción, especificando la referencia y la tabla.
+
+
+¿Que sucede si tenemos varios usuarios, y queremos crear datos ficticios cuidando de no romper la relacion? Esto me sirvió: Agregar use App\Models\user; al factory, colocar como return para el id 'user_id' => user::all()->random()->id,   PostFactory:
+
+
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\user;
+
+class PostFactory extends Factory
+{
+    public function definition()
+    {
+        return [
+            // 'user_id' => 1,
+            'user_id' => user::all()->random()->id,
+            'title' => $title = $this->faker->sentence(),
+            'slug' => Str::slug($title),
+            'body' => $this->faker->text(2200),
+        ];
+    }
+}
+
+lo apliqué y salió genial, solo en user::all o App\Models\user;. Me parece que la forma de escribir las clases es iniciar con letra Mayúscula. 
+
+
+
+Yo me plantee el mismo reto, cree 10 usuarios. Solo que a diferencia de ti hice la consulta diferente:
+
+'user_id' => User::inRandomOrder()->limit(1)->first('id'),
+
+Me parece que asi tarda menos el query, al no pedir TODO los usuario para luego tomar solo uno. Aqui limito al query a solo 1.
+
+
+
+¿Por qué el método en Post debe llamarse user() obligatoriamente?
+
+Si intentan cambiar el nombre del método dentro del modelo Post verán que todo se rompe. Esto es porque el método depende de la clave foránea creada (de la clave foránea, no del nombre del otro modelo). Nosotros la llamamos user_id, entonces interpreta que el atributo que le va a "dar vida" se va a llamar user. Si se llamase userx_id el método debería llamarse userx() y entonces el atributo a usar en la vista sería userx. Aparentemente, para que Laravel reconozca esto la clave foránea debe terminar en _id, entonces el nombre correspondiente sería lo que está antes del guion bajo. Más arriba dije que depende de la clave foránea y no del modelo porque tranquilamente mi clave foránea podría ser userx_id y el modelo al que hace referencia podría haber sido User y esto no importa porque esta relación ya se indica en las migraciones. Entonces en un post podríamos tener un autor y un asistente, corresponden a un User y podríamos llamar a sus claves foráneas author_id y assistant_id sin importar que el modelo se llame User. Ahora algunos ejemplos por si no quedó claro:
+
+    Si la clave foránea es user_id el método debe llamarse user() y el atributo se llamará user.
+    Si la clave foránea es author_id el método debe llamarse author() y el atributo se llamará author.
+    Si la clave foránea es usuario_id el método debe llamarse usuario() y el atributo se llamará usuario.
+
+
+A mi me dio un error de "tabla posts ya existe" con el comando:
+
+php artisan migrate:refresh --seed
+
+Busque en internet y me funcionó el siguiente comando:
+
+php artisan migrate:fresh --seed
+
+
+
+Según las convenciones de Eloquent, la primary key se llama 'id' y la foreign key 'nombreDelModelo_id', por lo que si estás utilizando otros nombres, debes especificarlos de la siguiente manera.
+
+class Post extends Model{
+    use HasFactory;
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(Usuario::class, 'ForeignKey', 'Primary_Key');
+    }
+}
+
+
+
+$table->foreignId('user_id')
+	->constrained()
+	->cascadeOnUpdate()
+	->restrictOnDelete();
+
+
+Yo Recomiendo crear una nueva migración para agregar la columna user_id
+
+return new class extends Migration {
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up(): void
+    {
+        Schema::table('posts', function (Blueprint $table) {
+            $table->unsignedBigInteger('user_id');
+
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down(): void
+    {
+        Schema::table('posts', function (Blueprint $table) {
+            $table->dropColumn('user_id');
+            $table->dropForeign('posts_users_id_foreign');
+        });
+    }
+};
+ 
+
+ $table->foreign('user_id') ->references('id') ->on('users');
+
+similar: $table->foreign('user_id')->constrained();
+
+: alternativa segun la guia de laravel: $table->foreignId('user_id')->constrained()->onDelete('cascade');
+
+
+
+
+Gestores de Base de datos
+
+	HeidiSQL
+
+
+
+
+
+Tengo un aporte muy interesante para entender como funciona el modelo en esta clase y su gran importancia:
+
+la instrucción "$post->user->name" en el compilado de PHP hace una proecamiento maravilloso
+
+@extends('template')
+
+@section('content')
+    <h3>Listado</h3>
+    @foreach ($posts as $post)
+        <p>
+            <strong>{{ $post-&gt;id }}</strong>   
+            
+            <a href="{{route('post', $post->slug)}}">
+                {{$post -&gt; title}}
+            </a>
+            <br>
+            <span>{{ $post-&gt;user-&gt;name }}</span>
+        </p>
+    @endforeach
+
+    {{$posts-&gt;links()}}
+@endsection
+
+Esta instrucción desde el modelo Post.php está ejecutando la función de user desde el modelo, la cual se encarga de compilar el Query SQL que se también se encarga de buscar la información del usuario y la imprime en la pantalla. No es magia, solo que hay muchas cosas que están ocultas, pero no por ello significa que no suceden. Que nivel de abstracción tan grande tiene Laravel, aquí dejo el extracto de código que hice para entenderlo y lo que muestra en el navegador:
+
+Models/Post.php
+
+belongsTo(User::class));
+        return $this-&gt;belongsTo(User::class);
+    }
+}
+``` &#x20;
+Navegador
+
+```js
+  #query: 
+Illuminate\Database\Eloquent
+\
+Builder {#1050 ▼
+    #query: 
+Illuminate\Database\Query
+\
+Builder {#1118 ▼
+      +connection: 
+Illuminate\Database
+\
+MySqlConnection {#289 …25}
+      +grammar: 
+Illuminate\Database\Query\Grammars
+\
+MySqlGrammar {#291 …5}
+      +processor: 
+Illuminate\Database\Query\Processors
+\
+MySqlProcessor {#292}
+      +bindings: array:9 [▼
+        "select" => []
+        "from" => []
+        "join" => []
+        "where" => array:1 [▼
+          0 => 1
+        ]
+        "groupBy" => []
+        "having" => []
+        "order" => []
+        "union" => []
+        "unionOrder" => []
+      ]
+
+
+Tengo un aporte muy interesante para entender como funciona el modelo en esta clase y su gran importancia:
+
+la instrucción "$post->user->name" en el compilado de PHP hace una proecamiento maravilloso
+
+@extends('template')
+
+@section('content')
+    <h2>Listado</h2>
+    @foreach ($posts as $post)
+        <p>
+            <strong>{{ $post->id }}</strong>   
+            
+            <a href="{{route('post', $post->slug)}}">
+                {{$post -> title}}
+            </a>
+            <br>
+            <span>{{ $post->user->name }}</span>
+        </p>
+    @endforeach
+
+    {{$posts->links()}}
+@endsection
+
+Esta instrucción desde el modelo Post.php está ejecutando la función de user desde el modelo, la cual se encarga de compilar el Query SQL que se también se encarga de buscar la información del usuario y la imprime en la pantalla. No es magia, solo que hay muchas cosas que están ocultas, pero no por ello significa que no suceden. Que nivel de abstracción tan grande tiene Laravel, aquí dejo el extracto de código que hice para entenderlo y lo que muestra en el navegador:
+
+Models/Post.php
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Post extends Model
+{
+    use HasFactory;
+    public function user()
+    {
+        dd($this->belongsTo(User::class));
+        return $this->belongsTo(User::class);
+    }
+}
+
+```Navegador
+
+![]()  #query: Illuminate\Database\Eloquent\Builder {[#1050 ▼](<> "[Ctrl+click] Expand all children")
+&#x20;   \#query: Illuminate\Database\Query\Builder {[#1118 ▼](<> "[Ctrl+click] Expand all children")
+&#x20;     +connection: Illuminate\Database\MySqlConnection {[#289]() …25}
+&#x20;     +grammar: Illuminate\Database\Query\Grammars\MySqlGrammar {[#291]() …5}
+&#x20;     +processor: Illuminate\Database\Query\Processors\MySqlProcessor {[#292]()}
+&#x20;     +bindings: array:9 \[[▼](<> "[Ctrl+click] Expand all children")
+&#x20;       "select" => \[]
+&#x20;       "from" => \[]
+&#x20;       "join" => \[]
+&#x20;       "where" => array:1 \[[▼](<> "[Ctrl+click] Expand all children")
+&#x20;         0 => 1
+&#x20;       ]
+&#x20;       "groupBy" => \[]
+&#x20;       "having" => \[]
+&#x20;       "order" => \[]
+&#x20;       "union" => \[]
+&#x20;       "unionOrder" => \[]
+&#x20;     ]![]()```js
+  #query: 
+Illuminate\Database\Eloquent
+\
+Builder {#1050 ▼
+    #query: 
+Illuminate\Database\Query
+\
+Builder {#1118 ▼
+      +connection: 
+Illuminate\Database
+\
+MySqlConnection {#289 …25}
+      +grammar: 
+Illuminate\Database\Query\Grammars
+\
+MySqlGrammar {#291 …5}
+      +processor: 
+Illuminate\Database\Query\Processors
+\
+MySqlProcessor {#292}
+      +bindings: array:9 [▼
+        "select" => []
+        "from" => []
+        "join" => []
+        "where" => array:1 [▼
+          0 => 1
+        ]
+        "groupBy" => []
+        "having" => []
+        "order" => []
+        "union" => []
+        "unionOrder" => []
+      ]
+
+
+
+En la documentación esta de esta manera: https://laravel.com/docs/9.x/eloquent-relationships#many-to-many
+
+
+Revisa la documentacion del ORM eloquent, siempre ten un lapiz y papel para que te des cuenta de la relacion que existe entre 2 tablas. Debido a que existe la relacion 1-n y n-1 y es poco confuso pero facil de entender al final.
+
+https://laravel.com/docs/9.x/eloquent-relationships
+
+
+
+es la relacion hasMany/belongsTo, un user tiene VARIOS posts y un post pertenece a UN user:
+
+$post contiene los atributos/objeto del post ->user contiene los atributos/objeto del usuario ->name es el atributo o columna 'name' del objeto/tabla user
+
+básicamente estas cargando el objeto user a través del objeto post.
+
+
+

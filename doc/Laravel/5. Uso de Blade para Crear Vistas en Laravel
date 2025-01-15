@@ -1,0 +1,51 @@
+5. Uso de Blade para Crear Vistas en Laravel
+
+otra forma de pasar información a una vista y es con with:
+
+return view('greeting')
+            ->with('name', 'Victoria')
+            ->with('occupation', 'Astronaut');
+
+Tambien se puede con el compact()
+
+Tambien se puede utilizar compact() para pasar la inforcacion
+
+Route::get('blog', function() {
+    //Simulamos una consulta a la base de datos
+    $posts = [
+        ['id' => 1 , 'title' => 'PHP', 'slug' => 'PHP'],
+        ['id' => 2 , 'title' => 'LARAVEL', 'slug' => 'Laravel'],
+        ['id' => 3 , 'title' => 'HTML', 'slug' => 'HTML'],
+    ];
+    return view('blog', compact('posts'));
+});
+
+Route::get('blog/{slug}', function($slug) {
+    $post = $slug;
+    return view('post', compact('post'));
+});
+
+
+Pasar el array:
+
+Route::get('section' Function () {
+$posts  =  [ 
+[ 'id' => 1, 'title' =>  'BANNER',  'slug' => 'banner' ]
+[ 'id' => 2  'title' =>  'Header',  'sslug' => 'header' ]
+];
+return view('blog', ['posts' => $posts])
+})
+
+
+En web.php,
+
+Route::get('blog/{slug}', function ($slug) {
+    // consulta en base de datos con el slug
+    $post = $slug;
+return view('post', ['post' => $post]);
+
+¿Hay alguna razón por la que poner la línea $post = $slug? Si lo ponemos de esta otra manera, ¿hay algo diferente?:
+
+Route::get('blog/{slug}', function ($slug) {
+    // consulta en base de datos con el slug
+return view('post', ['post' => $slug]);            

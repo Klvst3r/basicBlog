@@ -1,0 +1,156 @@
+Instalación de PHP y Laravel  en Ubuntu
+
+Laravel es un popular framework de código abierto para el desarrollo de aplicaciones web en PHP. Fue creado en 2011 por Taylor Otwell y desde entonces ha ganado una gran popularidad gracias a su facilidad de uso, su documentación completa y su gran comunidad de desarrolladores.
+
+Entre las características más destacadas de Laravel se encuentran su sistema de enrutamiento, migraciones de base de datos, sistema de plantillas Blade, ORM Eloquent, autenticación integrada y soporte para pruebas automatizadas.
+
+Laravel utiliza una sintaxis elegante y expresiva para escribir código y proporciona herramientas para mejorar la seguridad y el rendimiento de las aplicaciones.
+
+En resumen, Laravel es una excelente opción para aquellos que buscan un framework fácil de aprender, potente y bien documentado para el desarrollo de aplicaciones web en PHP.
+
+
+
+Para instalar Laravel 9 en Ubuntu primero debemos disponer como mínimo con > PHP en la versión 8.0 instalada en nuestro ordenador, para instalarlo debemos disponer de una lista de repositorios instalado, para esto usamos software-properties-common, la mayoría de ordenadores con Ubuntu disponen de esto por defecto pero por si nos hace falta ejecutamos esto en consola:
+
+$ sudo apt install software-properties-common
+
+Agregamos el repositorio de PHP de Ondřej Surý, el desarrollador principal de PHP y Debian, esto para que todas las versiones de PHP estén disponibles para su instalación:
+
+$ sudo add-apt-repository ppa:ondrej/php -y
+
+Luego actualizamos nuestra lista de repositorios APT actuales:
+
+$ sudo apt update && sudo apt upgrade
+
+La última versión de PHP ya estará disponible para instalarlo con todas sus dependencias (basadas en Apache), proseguimos con la instalación de una vez con:
+
+$ sudo apt install php
+
+Podemos comprobar que se instaló la última versión de PHP (en este momento es la 8.1) con lo siguiente:
+
+$ php -v
+
+Debemos constar de que PHP tenga ciertos módulos los cuales se específican acá, esto se comprueba con lo siguiente en la terminal:
+
+$ php -m
+
+Generalmente los módulos que suelen faltar son los siguientes:
+
+    bcmath
+    curl
+    dom
+    mbstring
+    xml
+
+La instalación de cada uno de estos módulos se realizan mediante APT, como ejemplo vamos a instalar bcmath:
+
+$ sudo apt install php-bcmath
+
+Lo siguiente será instalar Composer, pegamos todo esto en consola:
+
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+
+php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+
+php composer-setup.php
+
+php -r "unlink('composer-setup.php')";
+
+La instalación se realizará como composer.phar en el directorio personal, es recomendable moverlo a /usr/local/bin/composer:
+
+$ sudo mv composer.phar /usr/local/bin/composer
+
+Creación y ejecución de proyecto en Laravel 9
+
+Ya estamos listos para emplear Laravel, podemos crear un proyecto de Laravel 9 de nombre primer-proyecto así:
+
+$ composer create-project laravel/laravel primer-proyecto
+
+Para ejecutar el proyecto nos ubicamos en el directorio en donde hemos lo creado:
+
+$ cd primer-proyecto/
+
+Y procedemos con levantar el servidor así:
+
+$ php artisan serve
+
+Por defecto el proyecto se montará en la dirección 127.0.0.1:8000.
+
+Como extra podemos ejecutar Visual Studio Code en el mismo directorio para trabajar directamente con:
+
+$ code .
+
+
+Instalación de depencencias
+----------
+Instalar algunas dependencias previas para composer, apt y otros
+
+sudo apt install curl git apt-transport-https
+PHP
+Instalar php
+
+sudo apt install php-cli php-xml php-curl php-bcmath php-gd php-memcached php-redis php-intl php-soap php-xdebug
+dejé afuera a php-pcov, decidí usar xdebug en su lugar
+En producción xdebug será es necesario?
+Composer
+Instalar composer (copiado como dice en la página de downlads de composer, obviamente cambiará el hash con las diferentes versiones)
+cd Downloads
+
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" php composer-setup.php php -r "unlink('composer-setup.php');"
+ponerlo en el path para hacerlo global
+
+sudo mv composer.phar /usr/local/bin/composer
+node.js
+Instalar node.js (usé el LTS de nodesource) https://github.com/nodesource/distributions/blob/master/README.md
+Using Ubuntu
+
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - sudo apt-get install -y nodejs
+Laravel
+Instalar laravel (queda en /home/usuario/.config/composer)
+
+composer global require laravel/installer export PATH="~/.config/composer/vendor/bin:$PATH"
+No estoy seguro de si se debe de crear una app de laravel para ver si quedó bien todo, pero por si las moscas lo hice
+
+laravel new example-app cd example-app composer install
+MariaDB
+
+sudo apt install mariadb-server mariadb-client
+Checar que se instaló bien
+
+sudo service mariadb status
+debe decir Status: "Taking your SQL requests now..."
+
+mysql_secure_installation
+(las respuestas a las siguientes preguntas las hice para usar phpmyadmin, pero al final decidí aprender a usar otro)
+Switch to unix_socket authentication [Y/n] n
+Change the root password? NO
+Manejador de base de datos
+dbeaver community
+Lo instalé primero desde el snap pero está desactualizado, mejor desde el repositorio
+
+sudo add-apt-repository ppa:serge-rider/dbeaver-ce sudo apt-get update sudo apt-get install dbeaver-celarave
+Visual Studio Code
+Bajar el .deb e instalarlo. Él se encarga de agregar el repositorio. También se puede instalar de snap, pero me dió miedo tener problemas xD
+La versión va a cambiar depende de cuándo lo bajemos
+
+sudo apt install ./code_1.67.2-1652812855_amd64.deb
+
+https://www.youtube.com/watch?v=bNNAexB7sCw
+
+Dokerizado:
+https://github.com/CarlosArgelio/laravel-project/commit/5190254d35d3796deafd3d61d98b7c85022db976
+
+
+Esta es la forma más fácil para poder trabajar con Laravel porque no tienes que tener nada instalado aparte de docker.
+
+https://laravel.com/docs/9.x
+
+
+
+
+
+
+Instalacion de Laravel en Ubuntu
+Este comando me funcionó para instalar laravel en Ubuntu:
+
+php composer.phar create-project laravel/laravel proyecto

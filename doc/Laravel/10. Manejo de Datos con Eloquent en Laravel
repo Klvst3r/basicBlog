@@ -1,0 +1,215 @@
+10. Manejo de Datos con Eloquent en Laravel
+
+Post::get();-> Trae todos los registros de la base de datos Post::frist();-> Trae el primer registro de la base de datos Post::find(id); -> Busca un registro en la base de datos por medio de su id Post::latest(); -> Trae todos los registros de la base de datos, y los ordena de forma descendente
+
+adicional, podemos utilizar el método paginate(), para realizar la paginación, solo no nos debemos de incluir en nuestras vistas la propiedad links() para que podamos visualizar los controles de paginación
+
+
+Entonces busca por el nombre del campo, si quieres buscar un post especifico
+
+Post::where('nombre_campo_base_datos', 'id')->first();
+
+Todo dependera de que es lo que necesites buscar o filtrar.
+
+Hasta donde tengo entendido el metodo find() busca por medio de la llave primaria de tu tabla, entonces coloca la llave primaria que hayas puesto en la tabal para buscar más facil
+
+
+Si quieren ordenar de manera descendente, puede agregar el id
+
+$posts = Post::latest('id')->paginate();
+
+
+
+Este es mi resumen, pero puede que algunas partes esté mal por lo que recién estoy aprendiendo Laravel, pero igual creo que les puede ayudar :)
+Eloquent
+
+Eloquent es una herramienta que proporciona Laravel para poder manejar fácilmente a nuestras bases de datos que es una sintaxis propia de Laravel.
+
+Para poder usar eloquent se tiene que importar el modelo de la clase que vamos a consultar con la sentencia use App\Models\nombreModelo donde el nombreModelo es modelo que vamos a utilizar, y para manejar las consultas se debe poner la lógica en el controlador por lo tanto es allí donde debemos importar el modelo.
+
+Algunas sentencias importantes de eloquent son:
+
+    nombreModelo::get(): el cual trae todos los registros de la base de datos.
+    nombreModelo::first(): el cual nos trae el primer registro de nuestra base de datos.
+    nombreModelo::find(id): el cual nos trae el registro especificado.
+    nombreModelo::latest('columna'): el cual nos ordena de menor a mayor los registros de la columna especificada.
+
+    ->paginate(número_registros_por_pagina) este se le puede poner a todas las sentencias que tragan varios registros para paginar todos los registros que traga según un número especificado.
+
+==Nota==: El objeto a resultante de la paginación tiene un método llamado ->link() el cual el cual nos imprime la paginación en pantalla, los elementos que nos da son:
+
+    ̇« Previous: el cual nos permite ir a la página anterior
+    Next »: el cual nos permite el a la página siguiente
+    Showing x to x of x result el cual nos dice desde que número de registro vemos hasta cual vemos y cuantos registros hay en total
+    ícono de anterior: el cual nos permite ir a la página anterior
+    ícono de siguiente: el cual nos permite ir a la siguiente página
+    paginas que existen: es una enumeración de páginas para decirnos en qué número de página estamos.
+
+Donde:
+
+    nombreModelo: es el nombre del modelo que vamos a consultar.
+    columna: columna que se selecciona para hacer la operación de la sentencia
+    número_registros_por_pagina: el número de registros que tenga cada página.
+
+
+
+
+
+    Latest()
+
+El método latest permite ordenar fácilmente los resultados por fecha. Por defecto, el resultado se ordenará por la columna created_at de la tabla.
+
+Para poder ordenar de manera descendente el ‘‘id’’ ; se debe poner en el parámetro de latest() y colocar el método first () para ordenar desde el id =>1
+
+            $posts = Cats::latest('id')->first()->paginate();
+            return view('gato', compact('posts'));
+
+
+El método dd() muestra los elementos de la variable y finaliza la ejecución del script:
+
+dd($value);
+dd($valuea, $valueb);
+
+Si no desea detener la ejecución, utilice la función dump() en su lugar.                
+
+Es correcto esta función dd (Dump and Die) describe la variable y "mata" o detiene la ejecución.
+
+SI no entendiste la razón del porque se pone está línea
+
+'blog/{post:slug}'
+
+Esto se llama "Implicit Binding" y básicamente es cuando laravel automaticamente hace un select de la tabla(modelo) que cocida con el id o parametro especificado en una ruta. Sin embargo el profesor no solo pasa {slug} ¿Porqué? Para ser más explicitos.
+SI solo le pasamos {slug} Laravel tiene que ir a buscar el modelo que contenga un atributo slug pero con {post:slug} se ahorra ese trabajo porque ya la especificamos ese modelo
+
+
+Desconocia que se podia hacer esto en la ruta
+
+blog/{post:slug}
+
+Y en el controlador ya recibes el objeto Post
+
+Para que se vean bien los links de paginación:
+
+    Cargar bootstrap en template.blade.php sección <head>
+    En blog.blade.php:
+
+{{$posts->links('pagination::bootstrap-4')}}
+
+
+
+Les comparto la siguiente info ya que me tardé un rato en entender el funcionamiento; Dentro del controlador pageController, el método post recibe un parámetro llamado $post de tipo Post. Esto se conoce como inyección de dependencias implícita. Laravel automáticamente resuelve y asigna el valor del parámetro post en función del valor del slug proporcionado en la URL.
+
+Espero esto les sea de utilidad para entender como el ruteo valida el slug sin filtrado previo;
+
+Para probar el ordenamiento por fecha de creación usé fechas random en el factory, solo añaden esta línea:
+
+'created_at'    => $this->faker->dateTimeThisMonth(),
+
+Queda así:
+
+public function definition()
+{
+	$titile = $this->faker->sentence();
+
+	return [
+		'title' => $title,
+		'slug' =>	Str::slug($title),
+		'body' =>	$this->faker->text(1500),
+		'created_at' => $this->faker -> dateTimeThisMonth(),
+	];
+}
+
+
+Con eso les quedan fechas diferentes y se puede ver mejor el ordenamiento de los post más recientes
+
+
+Al momento de colocar
+
+ $posts = Post::latest()->paginate();
+
+no lo ordena empezando desde el 1 sino empieza a partir del 68, llega al 80 y se pasa al 43. ¿Alguien sabe el porque?
+
+Porque se están mostrando en el ejemplo 2 métdos al llamar los Post. Latest() y Paginate().
+
+    Los métodos **latest ** y oldest le permiten ordenar fácilmente los resultados por fecha. De forma predeterminada, el resultado se ordenará por la columna created_at de la tabla. O bien, puede pasar el nombre de la columna por la que desea ordenar:
+
+
+
+Si como yo, están acostumbrados a hacer consultas PDO y sintieron un poquito de miedo cuando en automático les trajo el post con el slug, les comento que el concepto se llama: Route Model Binding.
+
+Este mecanismo de Laravel permite que el framework resuelva automáticamente los modelos basados en las rutas definidas.
+
+Y pues que el pasarle nuestro slug a Post el comportamiento por defecto es retonar esa información.
+
+No solo puedes creer en Laravel, Laravel cree en ti. 
+
+
+Para aquellos que no entendieron esto:
+
+   Route::get('blog/{post:slug}',   'post')->name('post');
+```   Route::get('blog/{post:slug}',   'post')->name('post');
+
+
+
+aquí hay algo interantisimo:
+
+
+En el contexto de Laravel, **binding** (o enlace) se refiere a la vinculación automática de una ruta a un modelo. Laravel proporciona una funcionalidad llamada **Route Model Binding** que simplifica la inyección de instancias de modelos directamente en los métodos de los controladores basados en los parámetros de la ruta.
+
+### Tipos de Binding
+
+1. **Implicit Binding (Enlace Implícito)**:
+   * Laravel resuelve automáticamente los parámetros de la ruta y los vincula a instancias de los modelos basándose en el nombre del parámetro.
+   * Utiliza el identificador (ID) del modelo por defecto.
+2. **Explicit Binding (Enlace Explícito)**:
+   * Permite definir manualmente cómo deben ser resueltos los parámetros de la ruta.
+
+
+aquí más información de Laravel 9
+
+Routing - Laravel 9.x - The PHP Framework For Web Artisans
+
+
+Aquí en ligar de $post dentro del forecha no debería ser $posts?
+
+@foreach ($posts as $post)
+
+{{ $post->id) }}
+
+@endforeach
+
+
+
+Eloquent
+
+Eloquent es una herramienta que proporciona Laravel para poder manejar fácilmente a nuestras bases de datos que es una sintaxis propia de Laravel.
+
+Para poder usar eloquent se tiene que importar el modelo de la clase que vamos a consultar con la sentencia use App\Models\nombreModelo donde el nombreModelo es modelo que vamos a utilizar, y para manejar las consultas se debe poner la lógica en el controlador por lo tanto es allí donde debemos importar el modelo.
+
+Algunas sentencias importantes de eloquent son:
+
+    nombreModelo::get(): el cual trae todos los registros de la base de datos.
+    nombreModelo::first(): el cual nos trae el primer registro de nuestra base de datos.
+    nombreModelo::find(id): el cual nos trae el registro especificado.
+    nombreModelo::latest('columna'): el cual nos ordena de menor a mayor los registros de la columna especificada.
+
+    -&gt;paginate(número_registros_por_pagina) este se le puede poner a todas las sentencias que tragan varios registros para paginar todos los registros que traga según un número especificado.
+
+==Nota==: El objeto a resultante de la paginación tiene un método llamado -&gt;link() el cual el cual nos imprime la paginación en pantalla, los elementos que nos da son:
+
+    ̇« Previous: el cual nos permite ir a la página anterior
+    Next »: el cual nos permite el a la página siguiente
+    Showing x to x of x result el cual nos dice desde que número de registro vemos hasta cual vemos y cuantos registros hay en total
+    ícono de anterior: el cual nos permite ir a la página anterior
+    ícono de siguiente: el cual nos permite ir a la siguiente página
+    paginas que existen: es una enumeración de páginas para decirnos en qué número de página estamos.
+
+Donde:
+
+    nombreModelo: es el nombre del modelo que vamos a consultar.
+    columna: columna que se selecciona para hacer la operación de la sentencia
+    número_registros_por_pagina: el número de registros que tenga cada página.
+
+
+   
+

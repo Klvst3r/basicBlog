@@ -1,0 +1,43 @@
+7. Controladores en Laravel - Gestión de Rutas y Funciones
+
+definir grupo de rutas
+
+Para tener control sobre las rutas que vamos creando, con este comando de artisan podemos ver que rutas estan registradas.
+
+php artisan route:list
+
+Filtrar rutas que compienzen por alguna palabra asi:
+
+php artisan route:list --path=blog
+
+php artisan route:list --path=articles
+
+Esconder las rutas de paquetes de terceros (esta es muy util, para ver solamente las rutas que hemos creado)
+
+php artisan route:list --except-vendor
+
+
+
+En resumen:
+
+    Un controlador es sirve para aislar la lógica de las rutas
+
+    cada ruta debe tener un controlador.
+
+
+Comando:
+Create Route::controller by group
+
+
+POr qué se coloca class después de PageController en el archivo web.php
+
+
+Se usa en clases con namespace, haz este ejemplo y ve el resultado :)
+
+<?php
+
+namespace App;
+
+class Example { }
+
+echo Example::class;    

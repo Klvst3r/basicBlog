@@ -1,0 +1,73 @@
+6. Configuración de Plantillas para Vistas Reutilizables en Laravel
+
+
+Nos permite tener archivos pequeños de fácil administración, con poco código. Esto mediante templates, generamos uno y lo extendemos en distintos archivos
+
+    Creo un archivo template.blade.php utilizamos la directiva @yield('content')
+    En el archivo donde deseo utilizar él, template, extiendo @extends('template')
+    Posterior ya puedo utilizar él, template usando @section('content')
+
+
+HAy algo que el porfesor no explica y posiblemente cuando pongan la funcion de route no les funcione. Deben agregar esto en su web.php
+
+->name('nombre de la url'); 
+
+por ejemplo en home:
+
+Route::get('/', function () {
+    return view('home');
+})->name('home');
+
+
+
+2 partes, 1.- templates
+
+    Que permite la reutilización de código
+
+2.- nombre de rutas y creación de enlaces 
+
+    Nos permite crear enlaces de forma limpia
+
+
+Directivas en as Plantillas de Blade
+---
+
+Cuando utilizas la directiva @yield en una plantilla Blade, estás creando un espacio en blanco que será llenado por una vista que extienda esa plantilla. La vista que extiende la plantilla puede entonces sobrescribir ese espacio en blanco con su propio contenido.
+
+<html>
+    <head>
+        <title>@yield('title')</title>
+    </head>
+    <body>
+        @yield('content')
+    </body>
+</html>
+
+@extends('layout')
+
+@section('title', 'Mi Página de Inicio')
+
+@section('content')
+    <h2>Bienvenido a mi sitio web</h2>
+    <p>Este es el contenido de mi página de inicio.</p>
+@endsection```
+
+
+Nombramiento de una ruta:
+
+Nombramiento de ruta
+
+Una ruta se puede nombrar para la generación o redireccionamiento de UL`s específicas. Para nombra la ruta debemos insertar el nombre en el método name al final de la definición de la ruta.
+
+Route::get('/blog', function () {
+     return view('vistablog', ['saludo' => 'Hola Todos']);
+})->name('nombreblog');
+
+
+
+Envio de variables por url
+para enviar una variable por url se debe agregar en el blog.blade.php de la siguiente manera
+<a href="{{route('post', $post['slug'])}}"> {{ $post['title'] }} </a>
+
+
+

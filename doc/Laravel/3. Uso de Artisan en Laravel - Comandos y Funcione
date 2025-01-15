@@ -1,0 +1,132 @@
+3. Uso de Artisan en Laravel - Comandos y Funciones
+
+
+Comandos:
+-----
+Crear controlador
+    $ php artisan make:controller     
+
+Ayuda dsobre el comando anterior
+    $ php artisan make:controller --help
+
+Crear modelo
+    $ php artisan make:model --help
+
+
+
+
+
+Nota sobre controladores
+-----
+A la hora de crear un controlador siempre se debe de crear en singular.
+
+Por ejemplo si creare un para clientes (customers), en donde tendré todas las acciones las acción que realizare con lo clientes, el controlador debe llamarse CustomerController
+
+Tomando como ejemplo la documentación de Laravel ellos usan nombres de controladores en Singular.
+
+Controllers - Laravel 10.x
+https://laravel.com/docs/10.x/controllers#main-content
+
+Al final es un convención que como desarrollador se puede tomar.
+
+
+Artisan:
+
+Artisan es la herramienta de interfaz de línea de comandos (CLI) que viene integrada con el marco de Laravel. Proporciona una amplia gama de comandos útiles que agilizan varias tareas de desarrollo y ayudan a administrar su aplicación Laravel. Los comandos de Artisan cubren tareas relacionadas con andamios, administración de bases de datos, administración de paquetes y más.
+
+Los propósitos de Artisan en Laravel son:
+
+Generación de código y andamiaje: los comandos de Artisan le permiten generar código repetitivo para varias partes de su aplicación, como controladores, modelos, migraciones y más. Esto acelera el desarrollo al proporcionar un punto de partida para su código.
+
+Administración de base de datos: Artisan proporciona comandos para administrar la base de datos de su aplicación, incluida la creación y ejecución de migraciones, la inicialización de la base de datos con datos de muestra y la reversión de migraciones si es necesario.
+
+Gestión de caché y configuración: puede borrar y gestionar la caché de la aplicación, así como ver y modificar los ajustes de configuración mediante los comandos de Artisan.
+
+Automatización de tareas: los comandos de Artisan se pueden usar para automatizar tareas recurrentes, como enviar correos electrónicos, programar trabajos usando la programación de trabajos integrada de Laravel y más.
+
+Visualización de rutas y lista de rutas: puede enumerar e inspeccionar las rutas definidas en su aplicación mediante los comandos de Artisan, lo que le ayuda a realizar un seguimiento de los puntos finales de su aplicación.
+
+Generación de documentación: algunos paquetes y herramientas le permiten generar documentación de API a partir de los comentarios de su código, lo que brinda una mejor perspectiva de las API de su aplicación.
+
+Comandos personalizados: puede crear sus propios comandos personalizados de Artisan para realizar tareas específicas de su aplicación.
+
+Pruebas y depuración: los comandos de Artisan son útiles para ejecutar pruebas, generar andamios de prueba y realizar tareas de depuración.
+
+El uso de los comandos de Artisan a través de la terminal suele ser más rápido y eficiente que realizar las mismas tareas manualmente o mediante una interfaz gráfica. Es una herramienta esencial que mejora la experiencia de desarrollo en proyectos de Laravel al proporcionar una forma estandarizada de ejecutar tareas comunes y mantener la aplicación de manera eficiente.
+
+
+
+Artisan es la interfaz de línea de comandos incluida con Laravel, para ver una lista de todos los comandos Artisan disponibles podemos utilizar el comando ++list++:  y ayudarnos en el proceso de desarrollo.
+	-    Existe en la raíz de nuestro proyecto.
+	-    No debemos modificarlo, simplemente usamos los comandos que nos proporciona.
+
+
+	$ php artisan list
+
+Si en vez de Laravel Valet, utilizas Laravel Sail como entorno de desarrollo local, no olvides anteponer la línea sail para correr el comando:
+
+	$ ./sail artisan list
+
+Sail ejecutará sus comandos Artisan dentro de los contenedores Docker de su aplicación.
+
+Laravel Tinker permite interactuar con toda su aplicación Laravel en la línea de comando, incluidos sus modelos, trabajos, eventos y más de Eloquent.
+
+Para ingresar al entorno Tinker, ejecute el comando:
+
+	$ php artisan tinker
+
+Espero les ayude para iniciar 😁.
+
+Y recuerda que si no utilizas:
+
+    Laravel Valet
+    Laravel Sail
+
+Puedes utilizar las siguientes tecnologías:
+
+    XAMPP
+    LARAGON
+
+(Son recomendaciones que yo he utilizado, existen otras más).
+
+
+++art = php artisan++ Les recomiendo usar un alias para la terminal, es decir, en vez de escribir
+
+$ php artisan make:controller FooController
+
+es mas fácil escribir
+
+$ art make:controller FooController
+
+Esto lo puedes hacer desde la terminal en  ~/.zshrc o  ~/.bashhrc
+
+Y solo escribes:
+
+alias art="php artisan"
+
+Esto te ahorrará tiempo de escritura. Saludos ! Como crear un alias terminal
+https://undefined.sh/posts/comandos-alias-para-la-terminal/
+
+
+Modelo:
+Un modelo es "una tabla de la base de datos ejemplo usuarios" Un controlador : es una clase que nos permite gestionar las solicitudes sobre la tabla
+
+
+
+Imagen Procesdo de protocolo HTTP paa el Back end
+
+
+    Controlador: Es el intermediario y encargado de solucionar los request y los response
+
+    Modelo: Representacion de una tabla de la base de datos para poder manejarla desde nuestro programa y hacer las tipicas operaciones CRUD
+
+
+Referencias:
+Un poco mas de información: https://norvicsoftware.com/artisan-interfaz-de-linea-de-comandos-de-laravel/
+
+ convenciones con Laravel. https://kennyhorna.com/blog/laravel-convenciones-de-nombrado-nombres-4ef5faa1-66eb-4122-a7fd-d4ec367c33d0
+
+Nota Final:
+	Al ejecutar php artisan inspire en la consola, Artisan devuelve una frase inspiradora.
+
+	     

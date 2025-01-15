@@ -1,0 +1,42 @@
+2. Estructura principal de laravel
+
+
+
+    1. APP : Aqui vivira todo nuestro codigo principal.
+
+    2. Bootstrap: Utilizada por laravel para mejorar el rendimiento
+
+    3. config: Cada paquete que se instale. Se genera un archivo que se puede editar y modificar.
+
+    4. Database : Carpeta principal de las bases de datos
+
+    	a. migrations : Archivos con la estructura principal para desarrollar tablas.
+
+	    b. factories: nos permite desarrollar datos falsos para probar aplicacion
+
+    	c. seeders: encargada de ejecutar los factories que desarrollemos
+
+    5. lang: idioma
+
+    6. public: punto de acceso a web.
+
+    7. resources: archivos originales css,javascript y vistas
+
+    8. routes: configuramos rutas del trabaja principalmente en web.php
+
+    9. storage: elementos generados por laravel. cache o si usuario guarda muchos archivos se pueden guardar hay. 11 test: Pruebas
+
+    10. vendor: Nose toca esta carpeta. Hay se ve todo lo que se instala con composer.
+
+
+Laravel trae un servidor integrado
+Servidores compatibles con Laravel:
+----------
+Valet
+
+ó
+php -S 127.0.0.1:8000
+
+ó
+
+php artisan serve
