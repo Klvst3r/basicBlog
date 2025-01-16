@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request; // Clase que significa solicitud o peticion 
+use App\Http\Controllers\PageController;
+//use Illuminate\Http\Request; // Clase que significa solicitud o peticion 
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,36 +19,20 @@ use Illuminate\Support\Facades\Route;
 * Route::put  Actualizar
 |
 */
-
-Route::get('/', function () {
-    //return 'Ruta Home';
-    return view('home');
-})->name('home');
-
-Route::get('blog', function () {
-    $posts = [
-        ['id' => 1, 'title' => 'PHP', 'slug' => 'php'],
-        ['id' => 2, 'title' => 'Laravel', 'slug' => 'laravel']
-    ];
-
-    return view('blog', ['posts' => $posts]);
-})->name('blog');;
-
-
 /*Route::get('buscar', function (Request $request) {
     // consulta a BD
     return $request->all();
 });*/
+/*
+Route::get('/', [PageController::class, 'home'])->name('home');
 
-Route::get('blog/{slug}', function ($slug) {
-    $posts = [
-        'php' => ['id' => 1, 'title' => 'PHP', 'content' => 'Contenido sobre PHP'],
-        'laravel' => ['id' => 2, 'title' => 'Laravel', 'content' => 'Contenido sobre Laravel']
-    ];
+Route::get('blog', [PageController::class, 'blog'])->name('blog');;
 
-    if (!array_key_exists($slug, $posts)) {
-        abort(404, 'Post not found');
-    }
+Route::get('blog/{slug}', [PageController::class, 'post'])->name('post');;
+*/
 
-    return view('post', ['post' => $posts[$slug]]);
-})->name('post');;
+Route::controller(PageController::class)->group(function () {
+    Route::get('/',           'home')->name('home');
+    Route::get('blog',        'blog')->name('blog');
+    Route::get('blog/{slug}', 'post')->name('post');
+});

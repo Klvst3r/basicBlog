@@ -1,5 +1,10 @@
 7. Controladores en Laravel - Gestión de Rutas y Funciones
 
+Comandos
+
+$ php artisan make:controller PageController //sin estructura
+
+
 definir grupo de rutas
 
 Para tener control sobre las rutas que vamos creando, con este comando de artisan podemos ver que rutas estan registradas.
@@ -41,3 +46,34 @@ namespace App;
 class Example { }
 
 echo Example::class;    
+
+
+Despues de haber creado el controlador y definir la estructur inicial de los metodos a utilizar, vamos a la ruta y definir la ruta de importracion del controlador creado
+
+
+Con el alias de la caprtea y a partir de ahi la ruta de la carpeta
+
+Ahora podremos r al controlador y llmar a las vistas
+
+Para que ahora el manejo de las peticionesse haga desde un controlador
+
+Tranformando ahora la ruta de la siguiente manera:
+
+Route::get('/', [PageController::class, 'home'])->name('home');
+
+Basicamente decimos que el metodo post es el que va a responder y se encuentra dentro de este controlador
+
+
+Lo unico que escrribios de una forma mas organizada a traves de un grupo de rutas y eliminamos el acceo al controlador ya que esta difinido de manera inicial al definir el grupod e rutas
+
+Quedandono solo con la ruta y el metodo
+
+
+Route::controller(PageController::class)->group(function(){
+   
+    Route::get('/', 'home')->name('home');
+
+    Route::get('blog', 'blog')->name('blog');;
+
+    Route::get('blog/{slug}', 'post')->name('post');;
+});
