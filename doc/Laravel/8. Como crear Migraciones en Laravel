@@ -1,6 +1,10 @@
 8. Como crear Migraciones en Laravel
 
 
+Comandos:
+
+$ php artisan migrate // ejecución inicial de migraciones
+
 
 Migraciones Qué son las migraciones
 
