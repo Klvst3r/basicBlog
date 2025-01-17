@@ -1,6 +1,133 @@
 10. Manejo de Datos con eloquent en Laravel
 
 
+Toto el proyecto inicia en la ruta donde toda logica de consulta debe vivir dentro de un controlador.
+
+Asiq ue dentro del controlador configuracmos:
+
+Traer datos desde la BD
+
+
+Como los datos viven dentro de los controladores y entonces es necesario importarlos
+
+namespace App\Http\Controllers;
+
+use App\Models\Post;
+
+Si revismos nos indica que el namespace es el que se lista anteriormente.
+
+Tener en cuenta por que a veces se puede escribir
+
+use Illumintae\Database\eloquent\Factories\HasFactory;
+
+Esto se hace cuando se trabaja con clases directas de laravel, pero como queremos trabajar con una consulta con mi tabla. Post
+Debemos traer el archivo.
+
+
+ public function blog() {
+        //consulta a la bse de datos
+    
+    $posts = Post::get(); // Traeme los post
+
+    return view('blog', ['posts' => $posts]);
+    }
+
+
+Esto es o que hace eloquent que basicamente es un ORM que dentro de Laravel se llama Eloquent y es una herramienta que nos ayud a trbajar con los datos, como objetos de PHP.
+
+
+en la ruta se le indica que el slug es una propiedad del post
+
+Route::get('blog/{post:slug}', 'post')->name('post');
+
+
+Con esto tenemos todos nuestros registros del 1 - 80, si hacemos click en ellos vemos la información.
+
+El Objetivo de un orm es ayudarnos, a trbajar con los dtos como si fueran objetos.
+
+Asi si en las vistas podemos hacer la siguiente modificación.
+
+Iniciamos con la ista de blog
+
+
+Pasando de el arreglo
+
+aL objeto propiedad
+<strong>{{ $post->'id' }}</strong>
+
+Quedando:
+@extends('template')
+
+@section('content')
+    <h1>Listado</h1>
+
+     @foreach ($posts as $post)
+    <p>
+        <strong>{{ $post->id }}</strong>
+        <a href="{{ route('post',  $post->slug) }}">
+            {{ $post->title }}
+        </a>
+    </p>
+
+    @endforeach
+
+@endsection
+
+Se corrige tambien el post, 
+
+
+
+Lo que podemos hacer este punto es evaluar las diferentes opciones que nos proporciona eloquent, por ejemplo.
+
+La vista post queda:
+@extends('template')
+
+@section('content')
+
+    <title>{{ $post->title }}</title>
+
+    <h1>{{ $post->title }}</h1>
+    <p>{{ $post->body }}</p>
+
+    <a href="{{ url('blog') }}">Volver al listado</a>
+
+    
+@endsection
+
+
+y Blog con paginacion:
+
+@extends('template')
+
+@section('content')
+    <h1>Listado</h1>
+
+    @foreach ($posts as $post)
+    <p>
+        <strong>{{ $post->id }}</strong>
+        <a href="{{ route('post',  $post->slug) }}">
+            {{ $post->title }}
+        </a>
+    </p>
+
+    @endforeach
+
+    {{ $posts->links() }}
+
+@endsection
+
+El controlador:
+public function blog() {
+       
+    //Consulta de datos paginado 
+    $posts = Post::latest()->paginate();
+
+    return view('blog', ['posts' => $posts]);
+    }
+
+
+
+
 Post::get();-> Trae todos los registros de la base de datos Post::frist();-> Trae el primer registro de la base de datos Post::find(id); -> Busca un registro en la base de datos por medio de su id Post::latest(); -> Trae todos los registros de la base de datos, y los ordena de forma descendente
 
 adicional, podemos utilizar el método paginate(), para realizar la paginación, solo no nos debemos de incluir en nuestras vistas la propiedad links() para que podamos visualizar los controles de paginación

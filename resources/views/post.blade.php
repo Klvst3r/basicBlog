@@ -2,10 +2,11 @@
 
 @section('content')
 
-    <title>{{ $post['title'] }}</title>
+    <title>{{ $post->title }}</title>
 
-    <h1>{{ $post['title'] }}</h1>
-    <p>{{ $post['content'] }}</p>
+    <h1>{{ $post->title }}</h1>
+    <p>{{ $post->body }}</p>
+
     <a href="{{ url('blog') }}">Volver al listado</a>
 
     
