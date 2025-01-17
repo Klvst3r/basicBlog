@@ -1,5 +1,70 @@
 9. Como crear Modelos en Laravel
 
+
+Comandos:
+
+    $ php artisan make:model --help
+
+    $ php artisan make:model Post -fc  //Se crea el modelo con su factory y con su controlador
+
+
+Iniciamos con el Factory que este archivo nos permite definir datos flsos, crear una estructura principal de Ejemplo
+
+
+ public function definition(): array
+    {
+        return [
+            'title' => $this->faker->sentence(),
+            'slug' => $this->faker->sentence(),
+            'body' => $this->faker->text(1200),
+        ];
+    }
+
+Para que esto funcione se necesita modificar   , al archivo semilla
+
+El archivo semilla queda de la siguiente manera:
+
+public function run(): void
+    {
+        \App\Models\User::factory()->create();
+        \App\Models\Post::factory(80)->create();
+      
+    }
+
+
+Ahora, para que esto refresque la información de bd necesitamos el comando
+
+$ php artisan migrate:refresh --seed //Refrescamos y le pasamos la opcion del seeder, es decir, primero ejecuta las migraciones y despues se va a ejecutar el archivo de dtos semillas.
+
+
+Se ejecuta y ahora lo que necesitamos es una url amigable.
+
+Utilizando una clase propia de laravel en el factory
+
+Para utilizar cualquier texto en una url amigable mediante la importacion de:
+
+use Illuminate\Support\Str;
+
+
+Quedando el faker:
+
+public function definition(): array
+    {
+        return [
+            'title' => $title = $this->faker->sentence(),
+            'slug' => Str::slug($title),
+            'body' => $this->faker->text(1200),
+        ];
+    }
+
+
+
+ejecutamos el comando anterior
+$ php artisan migrate:refresh --seed
+
+
+
+
 Si les da error al escribir el comando
 
 php artisan migrate:refresh --seed

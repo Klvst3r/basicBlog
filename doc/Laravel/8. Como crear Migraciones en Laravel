@@ -5,6 +5,18 @@ Comandos:
 
 $ php artisan migrate // ejecución inicial de migraciones
 
+$ php artisn make:nigration posts //No es la manera convencional
+
+$ php artisan make:migration create_posts_table
+
+
+El meto up permite crear la tabla y elmetodo down es basicamente par regresar versiones
+
+Con esto creamos tablas a partir de un archivo.
+
+
+
+
 
 Migraciones Qué son las migraciones
 
