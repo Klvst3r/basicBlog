@@ -2,11 +2,14 @@
 
 Resumen.
 
+El trabvajo inicia
+
 1. rutas 
 
 Hasta este punto entendimos que el trabajo unicia en la rutas. 
 
 En las rutas indicc que esta preparado para responder una ruta, home, blog y una publicación de manera individual.
+
 
 2. Controladores
 
@@ -40,5 +43,23 @@ Entender que estan alojados os archivos que representasn a mis tablas
 
  Resultado con un buscador un listado y la visualización individual de cada publicación
 
+En el PostController
+
+Es importante enteder que los archivos que repreentan a las tabas es decir los Modelos
+
+- Post
+- User
+
+Las vistas las tenemos en la carpeta 
  
 
+- Home
+ - Blog
+ - Publicacion individual
+
+ - Layout Plantilla
+
+
+ El objetivo del proyeto es tener un buscador, un listado y la visulización individual de cada publicación individual 
+
+ 
