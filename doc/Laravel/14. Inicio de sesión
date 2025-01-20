@@ -1,0 +1,180 @@
+14. Para el inicio de sesion 
+
+
+Revisando el archiov d econfiguración de rutas, podemos ver que las rutas de inicio de sesion, se han configurado en :
+
+web.php
+
+
+require __DIR__.'/auth.php';
+
+Es un archivo hermano , ahora en este archivo vamos a modificar.
+
+es decir dentro de
+/routes/auth.php
+
+
+Para el proyectro solo necesitamos la ruta para inicio de sesion, no la ruta de registro ni la contraseña, ni resetear contraseñas, etc.
+
+Se borra toda esa inforamción 
+
+El objetivo es proporcionar un sistema administrado por una unica persona.
+
+
+<?php
+
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\ConfirmablePasswordController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\VerifyEmailController;
+use Illuminate\Support\Facades\Route;
+
+Route::middleware('guest')->group(function () {
+    Route::get('register', [RegisteredUserController::class, 'create'])
+                ->name('register');
+
+    Route::post('register', [RegisteredUserController::class, 'store']);
+
+
+    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
+                ->name('logout');
+});
+
+
+Si somos invitados entonces vamos a visualizar a la rutas de inicio de sesión, una que permite visualizar el formulario y otra que permite finalmente iniciar sesion.
+
+Si estamos autenticados, entonces, podre ejecutar la ruta de cierre de session.
+
+podemos eliminar tambien la importacion de archivos en la cabecera.
+
+Quedandonos unicamente con las clases que necesita estas rutas, 
+
+
+De om,mento queda asi:
+
+<?php
+
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use Illuminate\Support\Facades\Route;
+
+Route::middleware('guest')->group(function () {
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
+
+    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    });
+Route::middleware('auth')->group(function () {
+
+    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+});
+
+
+Hasta este punto todo debe de continuar funcionando.
+
+
+Ahora debemos revisar lo siguiente:
+
+En la seccion anterio utilizamos la clase 
+
+clave password.
+
+Y es por que esa es la inforamción inicial, definida en el factory.
+
+Debemos fijarnos que el password, es una contraseña encriptada pero el final esta el significado.
+
+'password' => static::$password ??= Hash::make('password'),
+
+
+Por ende lo que necesitamos es el usuario definido y la contraseña password.
+
+
+Otra cosa, es que cuando se hizo la compilación, basicamente se ejecutaroin algunos archivos propios de la configuracion del lado del clinete
+
+en el archivo
+    webpack.mix.js
+
+Dise que de manera directa que lo que esta en recursos:
+
+en este caso esta en el archivo
+vite.conf.js
+
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: [
+                'resources/css/app.css',
+                'resources/js/app.js',
+            ],
+            refresh: true,
+        }),
+    ],
+});
+
+
+Dentro de js/app.js
+
+Se va a gardar dentro de public/js
+
+import './bootstrap';
+
+import Alpine from 'alpinejs';
+
+window.Alpine = Alpine;
+
+Alpine.start();
+
+
+Basicamente es la misma logica para css
+
+Se va compilar y se va a guardar dentro de 
+
+public/css
+
+
+Ademas va a a incluir al framework "tailwindcss" que vamos a estar utilizando a lo largo del proyecto.
+
+Con esto se desarrollaron diferentes vistas.
+Este sistema de inicio de sesion desarrollolo diferentes vistas
+
+/auth/login
+
+login
+
+en 
+
+Diferentes componentes:
+
+/resources/components/
+
+Que permiten modificar el logo, mensajes, botones, todo esta en esta seccion de componentes
+
+
+La utilizacion de un componente es basicamente, entender que tiene estos archivos para poder modificar
+
+
+
+
+
+
+
+
+
+Referencia:
+Para inicio de sesion y si hay complicaciones podemos consultar:
+https://es.vitejs.dev/guide/troubleshooting.html 
+
+
+
+Hola, a mi me ha creado una ruta adicional que no se genera en el ejemplo, y no sé si seJa prudente también borrarla ¿qué opinan? es dentro de auth:
+
+Route::put('password', [PasswordController::class, 'update'])->name('password.update');
+
+
+
