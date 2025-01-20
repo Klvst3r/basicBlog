@@ -1,0 +1,80 @@
+16 listado de Opciones del panel administrativo
+
+
+
+
+Comentarios:
+
+Les recomiendo hacer uso de la directiva @forelse y no del @foreach. Prácticamente cumplen la misma función, la diferencia radica en que el @forelse me válida si el array viene vacio y me da una opción. Por ejemplo, que el usuario no tenga ninguna publicación (post) que ver, si usaramos el @foreach nos daria error.
+
+<div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+    <div class="p-6 bg-white border-b border-gray-200">
+        <table class="nb-4">
+            @forelse ($posts as $post)
+                <tr class="border-b border-gray-200 text-sm">
+                    <td class="px-6 py-4">{{ $post->title }}</td>
+                    <td class="px-6 py-4">
+                        <a href="" class="text-indigo-600" >Editar</a>
+                    </td>
+                    <td class="px-6 py-4" id="">Eliminar</td>
+                </tr>
+            @empty
+                <tr class="border-b border-gray-200 text-sm">
+                    Upps! no hay ninguna publicacion disponible
+                </tr>
+            @endforelse
+
+        </table>
+        {{ $posts->links() }}
+    </div>
+</div>
+
+
+
+<x-app-layout> <x-slot name="header"> <h2 class="font-semibold text-xl text-gray-800 leading-tight"> {{ __('Posts') }} </h3> </x-slot>
+
+<div class="py-12">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 bg-white border-b border-gray-200">
+            <table class="mb-4">    
+            @foreach (@posts as $post)
+            <tr class="border-b border-gray-200 text-sm">
+            <td class="px-6 py-4">{{$post->$title}}</td>
+            <td class="px-6 py-4">
+                <a href="#" class="text-indigo-600">Editar</a>
+            </td>
+            <td class="px-6 py-4">
+                Eliminar
+            </td>
+            </tr>
+            @endforeach
+            </table>
+                {{ $posts->links()}}
+            </div>
+        </div>
+    </div>
+</div>
+
+</x-app-layout>
+
+Con mi codigo tira error un bonito Undefined constant "posts" Pero al poner el tuyo funciona de maravilla
+
+Sale un error cuando se trata de acceder a la ruta /posts/ si no se esta logeado en el sistema, lo que se soluciona colocando Route::resource dentro de Route::middlerare:
+
+Route::middleware('auth')->group(function(){
+    Route::resource('posts', PostController::class)->except('show');
+}); 
+
+
+Gran aporte. Agrego que esto se debe a que si no se esta autenticado, la vista quiere mostrar el nombre de un user que no existe. Se soluciona declarando el middleware auth que viene con Breeze que verifica esto y pasándole un grupo de rutas (en este caso el resource). Si no está autenticado, redirige al usuario al formulario de login
+
+
+
+Mi aporte es el siguiente:
+
+    Revise muy bien el controlador, debido a que a veces escribimos mal y por una sola letra no funciona, como en mi caso, que en vez de escribir posts en la variable había escrito post, es decir que faltaba una s y por eso no funcionaba el siguiente código: 'posts'=> Post*::latest*()->paginate()
+    recuerden que en el .blade.php para llamar al titulo es desde el post individual y no desde los posts por eso me había salido un error al respecto, siendo el siguiente código el correcto para llamar al titulo: {{ $post->title }}
+
+espero les sirva de algo
+
