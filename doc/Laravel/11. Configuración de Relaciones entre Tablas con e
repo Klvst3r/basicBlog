@@ -1,5 +1,105 @@
 11. Configuración de Relaciones entre Tablas con eloquent
 
+La realación entre tablas permite identificar que usuario ha desarrollado que publicación.
+
+
+Un usurio tiene varias publicaciones y cada publicación tiene a un usuario.
+
+Enfoque de esta
+
+
+Agregar columna a tabla publicaciones se hace desde la migración, para agregar un campo
+
+Con un campo sque solo acepte numeross positivos y que adems sea entero.
+
+Ademas se crea una linea para crear la relación.
+
+Indicando que el campo foraneo llamado user_id hace referencia al campo id, que se encuentra dentro de la tabla de usuarios.
+
+
+Quedando el esquema:
+
+
+ Schema::create('posts', function (Blueprint $table) {
+            $table->id();
+
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
+
+            $table->string('title');
+            $table->string('slug')->unique();
+            $table->text('body');
+
+            $table->timestamps();
+        });
+
+
+Vamos a modificar alñ archivo, factory
+
+public function definition(): array
+    {
+        return [
+            'user_id' => 1,
+            'title' => $title = $this->faker->sentence(),
+            'slug' => Str::slug($title),
+            'body' => $this->faker->text(1200),
+        ];
+    }
+}
+
+Quedando en 1 por que es un unico usuario de pruebas.
+
+
+
+Una relacion par que es:
+Se utiliza precismente pr no estr duplicando, cada vez el nombre del usurios, comocando el id, y esto ya genera una relacion.
+
+Comrobando el uso especifico es en la pagina blog
+
+Oara imprimir la información
+
+<span>{{ $post->user->name }}</span>
+
+
+Esto basicamente requiere de ina infrmación adiciional.
+
+El sistema ahor va a fallar por que no consigue el nombre por que esta vacio o nulo, por ello debemos decir que existe una relacón en la tabla
+
+Laravel ahora no sabe que existe, asi que se debe registrar en el archivo que representa a la tabla. es decir en el modelo.
+
+Para ello debemos indicar que existe una relación en el modelo:
+
+Post
+
+ public function user(){
+        return $this->belongsTo(User::clas);
+    }
+
+
+Escribimos User por que una publicación pertenece a un unico usuario.
+
+Ete nombre se escribe en singular, retornando la Configuración
+donde pertenece a un usuario
+
+Regresando al navegador, podremos verificar la información
+
+
+Ahora necesitamos una configración parecida en User.
+
+
+
+
+
+
+
+Otra cosa todos los cambios se hacen en la migración por que estamos trabajando con datos semilla o datos falsos.
+
+Es decir que como ahora el sistema tiene datos que no son importantes, puedo ejeutar el comando de migraciones que borra todo y crea todo desde cero:
+
+
+    $ php artisan migrate:refresh --seed
+
+
 Se agrega la relación a la migración de reación de crear post
 
 
