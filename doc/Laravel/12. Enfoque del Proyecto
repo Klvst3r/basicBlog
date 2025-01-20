@@ -62,4 +62,85 @@ Las vistas las tenemos en la carpeta
 
  El objetivo del proyeto es tener un buscador, un listado y la visulización individual de cada publicación individual 
 
- 
+ Se copian las ruta y se elimina la ruta realiza
+
+ /*Route::get('/', function () {
+    return view('welcome');
+});*/
+
+
+Listo ahora tenemos la configuración anterior y la configuración que proporciona este proyecto.
+
+
+Antes de ejecutar los comandos.
+
+Queremos hacer una modificcion en la vista y mostrar el resultado en el naveador
+
+En la plantilla
+
+body>
+    <h1>Blog</h1>
+    <p>
+        <a href="{{ route('home') }}">Home</a>
+        <a href="{{ route('blog') }}">Blog</a>
+
+        @auth
+    </p>
+    <hr>
+    @yield('content')
+</body>
+
+
+La directiva @auth. Que verifica si estamos logeados con sesiones o no.
+
+
+
+ @auth
+            <a href="{{ route('dashboard') }}">Dashboard</a>
+
+        @else
+            <a href="{{ route('login') }}">Login</a>
+
+        @endauth
+	si estamos logueados queremos el acceso a lashboard
+
+Ahora tenemos el boton de inicio de sesioin, s muestra el formulario 
+
+Vamos a reparar por ello ejecutamos llos camando anteriores
+
+	$ npm install
+
+Para instalar tods las dependencias a nivel de diseño
+
+Se crea una carpeta que contendr toda la información, 
+
+/node_modules
+
+Aca se guarda todo respectoa JS, con esto listo podmos ejecutar
+	$ npm run dev
+
+Dentro de public se crea el archivo css y el js compilado que se habia comverado
+
+/public/css/app.cs y /public/js/app.js
+
+
+Esto se instala automaticamente por que se instala un componente.
+
+
+El resultado se geero con exito.
+
+Ahora debemos contar con un diseño.
+
+
+Ahora a partir de aqui podemos iniciar sesion.
+
+Se cuenta con un usuario, en uestro caso de la tabla usuario:
+
+Tomamos su emai.
+	audie.bahringer@example.org
+
+Utilizamos la conraseña de ejmplo que es 
+	password	
+
+Ahora el sistema ya funciona, tenemo acceso ala parte administrativa.
+

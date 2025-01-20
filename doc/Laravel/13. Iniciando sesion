@@ -1,0 +1,339 @@
+En esta sección vamos a instalar y configurar el sistema de iniciao de sesió, con las moficiaciones necesarias. Para tener un boton de inicio de sesión.
+
+Para administrar la ifnrmación de la tabla y que permita tener el area administrativa y el area publica que es para los usuarios.
+
+Para ello nos vmos a apoyar de un componente de Laravel
+
+$ composer require laravel/breeze --dev
+
+
+Se pone el parametro --dev por que solo se utiliza en el area de desarrollo.
+
+Ahora podemos ejecutar 
+
+$ php artisan
+
+Podemos confirmar que contamos con nuevos comandos.
+
+Entonces ya podemos instalar  a este nuevo componente.
+
+Es importante comentar que las ruta que se tienen ahora, se van a eliminar por ello se copian para luego reutilizarlo.
+
+Respaldamos el archivo web.php
+
+
+<?php
+
+use App\Http\Controllers\PageController;
+//use Illuminate\Http\Request; // Clase que significa solicitud o peticion 
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+* Route::get Consultar
+* Route::post Vamos a laterar nuestra Bd - Guardar
+* Route::delete Funcion Eliminar 
+* Route::put  Actualizar
+|
+*/
+/*Route::get('buscar', function (Request $request) {
+    // consulta a BD
+    return $request->all();
+});*/
+/*
+Route::get('/', [PageController::class, 'home'])->name('home');
+
+Route::get('blog', [PageController::class, 'blog'])->name('blog');;
+
+Route::get('blog/{slug}', [PageController::class, 'post'])->name('post');;
+*/
+
+Route::controller(PageController::class)->group(function () {
+    Route::get('/',           'home')->name('home');
+    Route::get('blog',        'blog')->name('blog');
+    Route::get('blog/{post:slug}', 'post')->name('post');
+});
+
+
+
+Ahora ejecutamos el comando de instalación
+
+    $ php artisan breeze:install
+
+Lo que pide inmediatamente despues es que ejecute
+
+$ npm install y npm run dev
+
+
+El comando:
+
+$ php artisan breeze:install
+
+ ┌ Which Breeze stack would you like to install? ───────────────┐
+ │ › ● Blade with Alpine                                        │
+ │   ○ Livewire (Volt Class API) with Alpine                    │
+ │   ○ Livewire (Volt Functional API) with Alpine               │
+ │   ○ React with Inertia                                       │
+ │   ○ Vue with Inertia                                         │
+ │   ○ API only                                                 │
+ └──────────────────────────────────────────────────────────────┘
+
+
+
+Hola, al instalar breeze, me da varias opciones Blade - 0 React - 1 Vue - 2 Api - 3
+
+No sé cual es la correcta, ya que en el curso no le pregunta ninguna opción, alguien me puedes ayudar por favor
+
+en este caso es Blade - 0
+
+Escogeriamos blade con Alpine
+
+
+
+
+Podemos ejecutar ahora npm install y nom run dev
+
+
+Pegamos las rutas que teniamos:
+
+
+
+
+Comentarios:
+
+En el caso que quieras crear un usuario diferente podemos poner en el seeder algo asi:
+
+        User::create([
+            'name' => 'El nombre Del usuario Nuevo',
+            'email' => 'correo@correo.com',
+            // metodo de encriptacion para la contraseña
+            'password' => bcrypt('123456')
+        ]);
+
+
+
+Para los que le sucede el mismo error por alguna razon en mi caso por que quiza uso laravel 8.xx con una versionde php 7.4x lo sulucione de la siguiente manera:
+
+    Ubicamos los archivos ( app.blade.php y guest.blade.php) dentro de la carpteta views/layaouts dentro de recursos.
+
+    Cambiamos el
+
+@vite(['resources/css/app.css', 'resources/js/app.js'])
+
+por
+
+<link rel="stylesheet" href="{{ asset('css/app.css') }}">
+ <script src="{{ asset('js/app.js') }}" defer></script>
+
+Y listo. :')
+
+
+en caso que tengan problemas para mostrar el login, ejecuten los comandos en este orden
+
+    composer require laravel/breeze
+    php artisan breeze:install
+    npm install
+    npm run dev
+    npm run build (este ultimo es sumamente importante)
+
+
+ese npm run build fue clave, lleva arto tiempo viendo que error podria ser, solo me falto ese ultimo. Gracias 
+
+
+
+Al ejecutar el siguiente comando nos hace un serie de preguntas, en este caso se debe seleccionar **BALDE **y las otras a gusto de cada uno. pero el modo **DARK **fue de todo mi agrado con un color azul oscuro muy bonito y nos ayuda a no fatigarnos la vista..
+
+php artisan breeze:install
+
+Nos arroja estas opciones.
+
+
+> Which stack would you like to install?
+  blade ....................................................0  
+  react ....................................................1  
+  vue ......................................................2  
+  api ......................................................3  
+❯ 0
+
+  Would you like to install dark mode support? (yes/no) [no]
+❯ yes
+
+  Would you prefer Pest tests instead of PHPUnit? (yes/no) [no]
+❯ yes
+
+
+A partir de Laravel 10, ya no tienes que ejecutar el comando npm run dev... Al ejecutar el npm install queda todo listo y ya puedes ejecutar tu login sin problemas... Ahorro de comandos, que llaman jejeje
+
+Instalación- actualizada
+
+Which Breeze stack would you like to install?
+
+Blade with Alpine ............................................................................................ blade
+
+Livewire (Volt Class API) with Alpine ..................................................................... livewire
+
+Livewire (Volt Functional API) with Alpine ..................................................... livewire-functional
+
+React with Inertia ........................................................................................... react
+
+Vue with Inertia ............................................................................................... vue
+
+API only ....................................................................................................... api
+
+❯ blade
+
+Would you like dark mode support? (yes/no) [no]
+
+❯ yes
+
+Which testing framework do you prefer? [PHPUnit]
+
+PHPUnit .......................................................................................................... 0
+
+Pest
+
+❯ PHPUnit
+
+
+No borres el siguiente código del web.php al instalar Breeze.
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Por ello es necesario hacer el respaldo de estas ruta primero nates de hacer la instalación de breeze
+
+
+Hola si no te funciono como a mi por tantos temas de que ahora la version de laravel es la 11, y quieres intentarlo nuevamente pero con la version 9, pues sencillo te enseño lo que a PLATZI le queda grande:
+
+composer create-project laravel/laravel:^9 nombre_proyecto
+
+De esta forma crean un proyecto en la version del curso eso o hasta que platzi se dedique a mantener informacion actualizada.
+
+
+engo problemas con la vista dashboard
+
+Route [profile.edit] not defined.
+
+No borres el siguiente código del web.php al instalar Breeze.
+
+Route::middleware('auth')->group(function () { Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit'); Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update'); Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy'); });
+
+
+Para los que usen Laravel 10.
+
+solo necesitan estos dos comandos.
+
+composer require laravel/breeze
+
+php artisan breeze:install
+
+Mi solucion para que me funcionaran los estilos, fue eliminar
+
+ @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+Y agregarle a las vistas layouts/app.blade.php y layouts/guest.blade.php
+
+<link rel="stylesheet" href="{{ asset('css/app.css') }}">
+<script src="{{ asset('js/app.js') }}" defer></script>
+
+Para los que tengan problemas al momento de ejecutar NPM RUN DEV, la solución para mi fue actualizar la version de NODE
+
+Si a alguien, al ejecutar el comando npm run dev, les aparece este error:
+
+<3 WARNINGS in child compilations (Use 'stats.children: true' resp. '--stats-children' for more details)
+webpack compiled with 3 warnings> 
+
+Prueben utilizando el siguiente comando:
+
+npm install autoprefixer@10.4.5 --save-exact
+
+A mi me funciono, ya que no me dejaba pasar de este problema, según lo investigado se debe a un paquete de color que ya esta en desuso (color-adjust), la fuente de la fuente donde vi este problema:
+
+https://github.com/twbs/bootstrap/issues/36259
+
+Es un tema complicado que se resuelve con el comando compartido, pero veo que hay muchas formas de resolverlo, sin embargo por como es algo nuevo para mi (y supongo que para muchos) es mejor para no quebrarse la cabeza, pero ayuda a entender como un paquete simple puede causarnos dolores de cabeza...
+Otro relacionado con el problema ⬇⬇
+
+mix.webpackConfig({
+stats: {
+    children: true,
+},});
+
+
+Olviden todo lo que dije anteriormente el problema esta en la forma en la que bleeze detecto los estilos css y el java, en views en cada archivo que genera (login, app, guest, navigation), tiene en el HEAD esta sentencia:
+
+ @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+La cual no funciona correctamente, aun no se porque pero una vez remplazando esa línea por esto:
+
+<link rel="stylesheet" href="{{ asset('css/app.css') }}">
+<script src="{{ asset('js/app.js') }}" defer></script>
+
+Ya funciona correctamente la carga de los estilos en los diferentes archivos, aqui mismo se podria utilizar lo que hemos aprendido anteriormente con el profesor, creando una plantilla con estas lineas y y aplicar el @extends y @section pero al menos para ser algo que genera la libreria y no nosotros, esperemos que en un futuro se arregle y no tengamos esta dependencia con estilos:
+
+Mi proyecto lo segui usando:
+
+composer create-project laravel/laravel example-app
+
+Al parecer da este problema con este tipo de inicializacion de proyecto.
+
+
+Había trabajado con Laravel/UI pero este otro paquete es nuevo para mi y se ve que también esta muy bien. Me tocara leer un poco más al respecto para entender las diferencias de cual es mejor para implementar en un sistema real.
+
+Lo resolví de la siguiente manera (por si a alguien más le sucede). Como estoy usando un host virtual y por default, vite utiliza el host 127.0.0.1, este no reconocía mi url personalizada así que tuve que ir a vite.config.js y agregar luego de plugins, la opción de server: { host: "laravel9.test" }. Obviamente, en donde dice laravel9.test, deben cambiarlo por su propio nombre de url.
+
+Al ejecutar los los comando de npm install y luego npm run dev y refrescar, en public no aparece la carpeta del css y el js, asi que el login me aparece sin estilos, alguien sabe por que?
+
+Para los que le sucede el mismo error por alguna razon en mi caso por que quiza uso laravel 8.xx con una versionde php 7.4x lo sulucione de la siguiente manera:
+
+    Ubicamos los archivos ( app.blade.php y guest.blade.php) dentro de la carpteta views/layaouts.
+
+    Cambiamos el
+
+@vite(['resources/css/app.css', 'resources/js/app.js'])
+
+por
+
+<link rel="stylesheet" href="{{ asset('css/app.css') }}">
+ <script src="{{ asset('js/app.js') }}" defer></script>
+
+Y listo. :')
+
+INFO: Cuando utilizas Laravel Breeze, el comando php artisan breeze:install realiza muchas tareas, incluyendo la instalación de las dependencias de JavaScript y la compilación de los assets, por lo que no necesitas ejecutar manualmente los comandos npm install y npm run dev.
+
+El comando php artisan breeze:install automatiza la instalación de las dependencias de JavaScript utilizando npm y compila los assets de tu aplicación. Esto es parte de la conveniencia que Laravel Breeze proporciona para simplificar el proceso de configuración de autenticación en Laravel.
+
+Entonces, si has ejecutado php artisan breeze:install y no has experimentado problemas, no necesitas ejecutar manualmente los comandos de npm en este caso específico. Sin embargo, es siempre bueno verificar que las dependencias se hayan instalado correctamente y que los assets se hayan compilado apropiadamente después de ejecutar el comando Laravel Breeze.
+
+Si en el futuro encuentras algún problema con los assets de JavaScript o CSS, o si necesitas personalizarlos, podrías necesitar ejecutar manualmente los comandos npm install y npm run dev en ese momento, pero por ahora, parece que Laravel Breeze se encargó de todo automáticamente.
+
+
+Yo ejecuté el
+
+PHP artisan breeze:install luego los comandos NPM
+
+Al momento de ingresar a la sección del logien me aparecía con error del comando que se instala solo que es el @vite en el header para el estilo, por ende los agregue de forma manual y me cargo sin problemas.
+
+<!-- Styles -->
+<link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+<!-- Scripts -->
+<script src="{{ asset('js/app.js') }}" defer></script>
+
+En mi caso tuve que ejecutar:
+
+php artisan cache:clear
+php artisan optimize 
+
+Esto para que me reconociera la ruta de /login y otros cambios que no veía como el profesor lo planteaba.
+
