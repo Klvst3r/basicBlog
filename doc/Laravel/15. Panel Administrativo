@@ -1,0 +1,187 @@
+15 Panel Administratiovo
+
+Vamos a iniciar con la configuración de nuestro panel administratiuvo, nuestro enfoque en este punto es trabajar unicamente con la tabla de publicaciones.
+
+Necesitamos comenzar con el desarrollo de una ruta
+
+
+
+use App\Http\Controllers\PostController;
+Route::resource('posts', PostsController::class);
+
+
+En la terminal ejecutamos:
+
+    $ php artisan route:list
+
+
+Para que haga el listado de rutas, vamos a enfocarnos en el punto 
+
+ php artisan route:list
+
+  GET|HEAD        / ........................................................................................................... home › PageController@home
+  POST            _ignition/execute-solution ............................... ignition.executeSolution › Spatie\LaravelIgnition › ExecuteSolutionController
+  GET|HEAD        _ignition/health-check ........................................... ignition.healthCheck › Spatie\LaravelIgnition › HealthCheckController
+  POST            _ignition/update-config ........................................ ignition.updateConfig › Spatie\LaravelIgnition › UpdateConfigController
+  GET|HEAD        api/user ............................................................................................................................... 
+  GET|HEAD        blog ........................................................................................................ blog › PageController@blog
+  GET|HEAD        blog/{post} ................................................................................................. post › PageController@post
+  GET|HEAD        dashboard .................................................................................................................... dashboard
+  GET|HEAD        login ............................................................................... login › Auth\AuthenticatedSessionController@create
+  POST            login ........................................................................................ Auth\AuthenticatedSessionController@store
+  POST            logout ............................................................................ logout › Auth\AuthenticatedSessionController@destroy
+  GET|HEAD        posts ............................................................................................... posts.index › PostController@index
+  POST            posts ............................................................................................... posts.store › PostController@store
+  GET|HEAD        posts/create ...................................................................................... posts.create › PostController@create
+  GET|HEAD        posts/{post} .......................................................................................... posts.show › PostController@show
+  PUT|PATCH       posts/{post} ...................................................................................... posts.update › PostController@update
+  DELETE          posts/{post} .................................................................................... posts.destroy › PostController@destroy
+  GET|HEAD        posts/{post}/edit ..................................................................................... posts.edit › PostController@edit
+  GET|HEAD        profile .......................................................................................... profile.edit › ProfileController@edit
+  PATCH           profile ...................................................................................... profile.update › ProfileController@update
+  DELETE          profile .................................................................................... profile.destroy › ProfileController@destroy
+  GET|HEAD        sanctum/csrf-cookie .................................................. sanctum.csrf-cookie › Laravel\Sanctum › CsrfCookieController@show
+
+
+
+
+Centrandonos en estas siguientes rutas:
+
+GET|HEAD        posts ............................................................................................... posts.index › PostController@index
+  POST            posts ............................................................................................... posts.store › PostController@store
+  GET|HEAD        posts/create ...................................................................................... posts.create › PostController@create
+  GET|HEAD        posts/{post} .......................................................................................... posts.show › PostController@show
+  PUT|PATCH       posts/{post} ...................................................................................... posts.update › PostController@update
+  DELETE          posts/{post} .................................................................................... posts.destroy › PostController@destroy
+  GET|HEAD        posts/{post}/edit ..................................................................................... posts.edit › PostController@edit
+
+  Son 7 rutas que completasn basicamente a la administración de uan tabla.
+
+  Aunque todo es interesnte pero no se va a tarbajar con la ruta de mostrar por ello vamos a esribir en el archivo web.php
+
+  Trabaja con todo excepto con la ruta show
+
+    Route::resource('posts', PostController::class)->except('show');
+
+Ejecutamos de nuevo este comando y ahora tenemos 6 rutas    
+
+
+
+GET|HEAD        posts ............................................................................................... posts.index › PostController@index
+  POST            posts ............................................................................................... posts.store › PostController@store
+  GET|HEAD        posts/create ...................................................................................... posts.create › PostController@create
+  PUT|PATCH       posts/{post} ...................................................................................... posts.update › PostController@update
+  DELETE          posts/{post} .................................................................................... posts.destroy › PostController@destroy
+  GET|HEAD        posts/{post}/edit ..................................................................................... posts.edit › PostController@edit
+
+
+Esto es necesario en la configuración por que de manera automatica crea cada una de estas necesidades, de hecho si en terminal  
+
+podemos ver que algunas rutas son get otras son post otras son put y otra es delete directamente, cada ruta tiene su funcion, alguna son para consultar otras par eliminar, otras para mostrar el formulario y finlemente para alterar a la Bd.
+
+Podemos ahora hacer la configuracion en nuestroc ontrolador.
+
+PostController
+
+class PostController extends Controller
+{
+    public function index() {
+        
+    }
+
+}
+
+
+Necesitamos escribir el metodo iniciando con index, retornando una vist que va a estar en una carpeta aun no creada
+
+En el metodo invocamos a la vista index que utilizamos la plantilla siguiente:
+
+
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Posts') }}
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    {{ __("Listado de publicaciones") }}
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
+
+
+
+Comentarios:
+
+sufrí un rato por un error que lanzaba, hasta que recordé y me di cuenta que para poder acceder a esta ruta debo de estar logeado.
+    Pudieramos resolver este problema, tan solo agregando el middleware a la ruta que creo el profesor.
+
+        Route::resource('post', PostController::class)->except(['show'])->middleware(['auth']);
+
+
+
+
+Proteger rutas en laravel
+---
+
+Proteger rutas siginifica envolverlas dentro de una capa de seguridad, para que solo las puedan acceder usuarios logeados. Hay dos formas: . Desde el archivo de rutas:
+
+Route::get('/dashboard', function () {
+    return 'esto es un closure que hace algo';
+})->middleware(['auth', 'verified']);
+
+Directamente desde el controlador (ejemplo: PostController):
+
+    // Esto es para proteger la ruta
+    public function __construct()
+    {
+        $this->middleware(['auth', 'verified']);
+    }
+
+En ambos casos podemos podemos agregar esta opcion si no queremos proteger todos los end points de la ruta (ejeplo: en el caso de los controladores de recursos (7 rutas) o los controladores para rutas de api (5 rutas))
+
+$this->middleware(['auth', 'verified'])->except(['index', 'show']);
+
+
+Para los que tienen problemas con Post y no logra ver en la lista la ruta de post deben escribir los siguientes comandos en la consola debes limpiar la cache con este comando. php artisan route:cache php artisan route:list php artisan serve
+
+
+
+si a alguien le sale que no tiene el archivo manifest.json y por eso no funciona puede ejecutar el comando npm run build y se le soluciona el error
+
+
+
+Listar rutas filtrando por nombre
+
+php artisan route:list --name=posts
+
+
+
+Al instalar Breeze y no sgenera el siguiente error:
+
+
+ya he hecho todo lo que el profe ha hecho si alguien sabe me podrian ayudar
+
+    Unable to locate a class or view component [app-layout]
+
+
+Hola buenas noches, me sucedió y tarde un poco en dar con la solución pero lo logre y te comento que eso sucede porque al correr composer require laravel/breeze --dev actualmente te preguntará que opción instalar debes seleccionar la 0 que es usar .blade entonces no tendrás mas ese error
+
+
+
+He seguido todos los pasos al pie de la letra, pero ahora me ha salido este error "Route [profile.edit] not defined.", alguien sabe porque sucede esto?
+
+Por si a alguien más le llega a pasar, lo único que tienen que hacer es no borrar el siguiente código del web.php
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
