@@ -1,0 +1,118 @@
+17. Eliminar
+
+La funcion de eliminar,
+
+necesitamos un formulario que permita dicha acción,
+
+
+Ya contamos con la ruta, vamos ahora al controlador
+
+  public function destroy(Post $post) {
+        $post->delete();
+        //consulta directa
+        return back();
+    }
+
+
+Esperamos un post, se recibe y se ejecuta la funcion de borrado, basicamente el post se elimna, y retorne a la vista anterior.
+
+Esto es sufiiente a nivel de controlador.
+
+Nosotros sabemos como se llaman estos metodos, la ruta y el parametros que se esta esperndo.
+
+Con el comando:
+
+$ php artisan route:list
+
+Nos dice que la ruta index apunta al metodo index y la ruta destroy apunta al metodo destroy,
+
+Todo esto gracias a la definición de rutas.
+
+Route::resource('posts', PostController::class)->except('show');
+
+Si hubiese escrito ruta a ruta se hbieses utilizado la configuración. Pero en este caso usamos la ubicación de laravel.
+
+ahora vamos al index.
+
+En el espacio de eliminar, se logra con la utilización de un formulario, de como vamos a alterar la bd, con el metoo post, y la ruta que necesitamos afectr 
+
+puntamos  a la ruta de eliminar 
+
+<form action="{{ route('posts.destroy', $post) }}" method="POST"></form>
+
+Apuntamos a la ruta de eliminar, destroy espera como parametro al post con el que se esta trabajando ahora necesitamos dos cosas
+
+- Hcer que nuestro formulario sea seguro, @csrf pra generar un token de seguridad
+
+- Nuestra intencion es eliminar.
+ <form action="{{ route('posts.destroy', $post) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+
+a APARTIR DE AC HOR ES DISEÑO
+
+<table class="mb-4">
+                        @foreach ($posts as $post)
+                        <tr class="border-b border-gray-200 text-sm">
+                            <td class="px-6 py-4">{{ $post->title }}</td>
+                            <td class="px-6 py-4">
+                                <a href="" class="text-indigo-600">Editar</a>
+                            </td>
+                            <td class="px-6 py-4">
+                                <form action="{{ route('posts.destroy', $post) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <input type="submit" value="Eliminar" 
+                                    class="bg-gray-800 text-white rounded px-4 py-2"
+                                    onclick="return confirm('Desea eliminar?')">
+                                </form>
+                            </td>
+                        </tr>
+                            
+                        @endforeach
+
+                    </table>
+                        {{  $posts->links() }}
+
+
+
+con esto terminamos 
+
+
+
+
+
+
+
+Comentarios:
+
+La función @csfr de Laravel genera automáticamente el token CSRF de Laravel para cada sesión de usuario activa. Este token ayuda a verificar que la solicitud y la aprobación de la aplicación solo se otorgan al usuario autenticado
+
+
+
+Si no les carga los estilos de Tailwind ejecuten : npm run dev y npm run watch, si no les carga agreguen el sigueinte codigo al package.json dentro de “scripts”:
+
+"watch": "vite build --watch"
+
+Ahora si ejecuten npm run watch y se cargaran los estilos. 
+
+
+
+Para los que estamos viendo este curso en el 2024 y no les funciona el delete.
+
+Asi quedaria la funcion destroy en PostController
+
+public function destroy($id) 
+{ 
+  $post = Post::find($id);  
+  $post-&gt;delete(); 
+  return back(); 
+}
+```En el form del fichero index.blade.php quedaría asi:
+
+
+
+```js
+action="{{ route('posts.destroy',$post-&gt;id) }}"
+

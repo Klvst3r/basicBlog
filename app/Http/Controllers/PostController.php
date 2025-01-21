@@ -15,4 +15,10 @@ class PostController extends Controller
         ]);
     }
 
+    public function destroy(Post $post) {
+        $post->delete();
+        //consulta directa
+        return back();
+    }
+
 }
