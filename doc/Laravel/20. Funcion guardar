@@ -1,0 +1,196 @@
+20. Funcion guardar
+
+En esta seccion vamos  crear un registro en la BD
+
+Configuración del Controlador
+
+En el controlador se crea el metodo store, 
+
+public function store(Request $request) {
+
+    recibiendo lo que envia un usuario y se recibe con la clase Reqeust $request
+
+
+Quedando nuestro metodopublic function store(Request $request) {
+
+use Illuminate\Support\Str;
+
+        //Una nueva publicación a partir del usuario logueado que se enuanetra en la case Request $request
+        //Cremos el registro
+        $post = $request->user()->posts()->create([
+            'title' => $title = $request->title,
+            'slug' => Str::slug($title),
+            'body' => $request->body,
+        ]);
+
+        
+
+        // Retorna a la vists
+        return view('posts.create', ['post' => $post ]);
+    }
+
+Esta es una clase que necesitamos exportar
+use Illuminate\Support\Str;
+
+Quedando Primero mis archivo s y en la parte de abajo estan los archivos propios del framework ordenados alfabeticamente
+
+Posterior al almacenamiento necesitamos que haya una redirección
+
+al enviar el almacenamiento de inforamción ahora nos arroja un error indicando que el metodo no exite
+
+Call to undefined method App\Models\User::posts()
+
+
+Corrigiendo
+
+en la entidad de usuarios es decir en el Modelo User
+
+Especificamos la relacion
+
+public function posts() {
+        return $this->hasMany(Post::class);
+    }
+
+
+
+Redirigiendo la vista edit y el registroreturn redirect()->route('posts.edit', $post);
+
+Hasta este momento habra en error por que el sistema no conseguira la configuración siguiente:
+
+$post = $request->user()->posts()->create([
+
+Ya que hora dice:
+Call to undefined method App\Models\User::posts()
+
+
+El metodo no esta definido.
+
+Corregimos
+
+ public function posts() {
+        return $this->hasMany(Post::class);
+    }
+
+Indicamos que el metodo esta en plural ya que un usuaro tiene muchas publicaciones 
+
+Pero ahora el sistema indicara que no podemos trabar con la asignacion masiva de datos si no se configure
+
+Add [title] to fillable property to allow mass assignment on [App\Models\Post].
+
+La solucion a ello 
+No existe la propiedad por lo tanto el sistema de asignacion masiva no se va a a ejecutar
+
+ya que en el modelo user tenemos solo tres datos.
+
+Entonces debemos hacer lo mismo para el modelo de las publicaciones
+
+Para que el sistema acepte el titulo, la url amigable y el body 
+
+quedando la configurcion asi:
+
+Esta seria la configuracion del modelo de post para poder aignar masivamente:
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Post extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'title',
+        'slug',
+        'body',
+    ];
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+}
+
+
+Vamos al formulario de crear y registrar y hay una redirección, guardando la información.
+
+Creamos un registro en la bd.
+
+Ya tenemos preparado todo para que editar pued ser confgurado con exito.
+
+
+
+
+
+Comentarios:
+
+Al momento de guardar no me funcionaban los request, el error era que es necesario que tenga el atributo nombre el input para crear un registro nuevo
+
+<input value="{{  $categoria->nombre }}" name="nombre" 
+          type="text" placeholder="Nombre" >
+
+
+Gran aporte , los atributos nombre deben ser iguales a los que están en nuestra** migraciones**          
+
+
+Cuando pulso el Botón de "Enviar" obtengo el siguiente mensaje:
+
+The POST method is not supported for route posts/create. Supported methods: GET, HEAD, PUT, PATCH, DELETE.
+
+Alguna idea de por que se está presentando este mensaje? no he podido solucionarlo
+
+
+Ya solucionè, habia declarado mal mi formulario de create, lo habia colocado como:
+<form action="{{ route('posts.create', $post) }}" method="POST">
+
+Y debe ser:
+<form action="{{ route('posts.store', $post) }}" method="POST">
+
+
+que es hasMany ?? alguien me puede explicar
+
+Es una relación de Eloquent donde le dices a Laravel que existe una relación de uno a muchos (one to many). En el ejemplo, se expresa que un usuario puede tener muchos posts y la autoría de los posts le pertenecen sólo a un usuario (uno a muchos).
+
+Te dejo un enlace a la documentación oficial sobre esta relación. 😎
+
+https://laravel.com/docs/9.x/eloquent-relationships#one-to-many
+
+
+Yo lo hice de esta manera, es otro sistema, pero por si alguno le sirve de esta forma, también guarda.
+
+public function store(Request $request) { $page = new Page;
+
+    $page->pag_name = $request->name;
+    $page->pag_url = Str::slug($request->name);
+    $page->pag_body = $request->body;
+    $page->pag_state = 1;
+
+    $page->save();
+
+    return redirect()->route('pages.edit', $page);
+}
+
+
+
+Muchas gracias por el aporte @Edwin! Lo hice de esta forma por que la que vimos en clase no me detectaba la función posts creada en el modelo de User. Vi que también el redirect que se usas en tu ejemplo es diferente, sabes a que se debe? Lo tenia como lo vimos en clase:
+
+return redirect('posts.edit', ['post' => $post])
+
+Y tampoco me funcionaba hasta que lo implemente como el ejemplo que compartes c: Saludos!
+
+La documentación define 2 métodos save y create
+
+```
+$post = new Post;
+    $post->title = $title = $request->title;
+    $post->slug  = Str::slug(title);
+    $post->body  = $request->body; 
+    $post->save();
+    return redirect('/posts'); 
+
+y el create que es como el que se usa en el video con un array pero te obliga a que el modelo define los campos que se pueden rellenar
+
+
+Cuando se produce la redirección recibo el error: The PUT method is not supported for this route. Supported method: GET, HEAD. El registro se guarda y la ruta edit funciona pero falla luego de crear y redireccionar. El código es el que venimos haciendo ¿alguna idea qué puede estar ocurriendo?
+
