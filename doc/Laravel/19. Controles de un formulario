@@ -1,0 +1,99 @@
+19. Controles de un formulario
+
+Se trabajara con los controles del formulario
+
+Sera necesario trabajar con el controlador y con el formulario
+
+_form
+
+@csrf
+
+<label for="" class="uppercase text-gray-700 text-xs">Título</label>
+<input type="text" name="title" class="rounded border-gray-200 w-full mb-4" value="{{ $post->title }}">
+
+<label for="" class="uppercase text-gray-700 text-xs">Contenido</label>
+<textarea name="body" rows="5" class="rounded border-gray-200 w-full mb-4" >{{ $post->body }}</textarea>
+
+<div class="flex justify-between items-center">
+    <a href="{{ route('posts.index') }}" class="text-indigo-600">Volver</a>
+    <input type="submit" value="Enviar" class="bg-gray-800 text-white rounded px-4 py-2">
+</div>
+
+
+
+
+con elo queda esta vista de editar, pero la vista create marca error por que no esta recibiendo la vriable $post
+
+Enonces en el metodo reate tambien recibimos los vlores el formulario
+
+ public function create(Post $post) {
+        // Retorna a la vists
+        return view('posts.create', ['post' => $post ]);
+    }
+    public function edit(Post $post) {
+    return view('posts.edit', ['post' => $post ]);
+    }
+
+enn crear el valor va a pasar como nulo ppero servira para registrar nuestra información
+
+Comentarios:
+
+
+
+Si al momento de imprimir el valor del post tanto de title como de body se le antepone un @ no será necesario mandar Post $post en la función create(), por ejemplo:
+
+Funciones de edit() y create():
+
+public function create(){
+    return view('posts.create');
+}
+
+public function edit(Post $post){
+	return view('posts.edit', compact('post'));
+}
+     	
+
+Código del archivo _form.blade.php():
+
+<label class="uppercase text-gray-700 text-xs">Título</label>
+<input type="text" name="title" class="rounded border-gray-200 w-full mb-4" value="{{ @$post->title }}">
+
+<label class="uppercase text-gray-700 text-xs">Contenido</label>
+<textarea name="body" id="" rows="5" class="rounded border-gray-200 w-full mb-4">{{ @$post->body }}</textarea>
+
+<div class="flex justify-between items-center">
+    <a href="{{ route('posts.index') }}" class="text-indigo-600">Volver</a>
+    <input type="submit" value="Enviar" class="bg-gray-800 text-white rounded px-4 py-2">
+</div>
+
+Importante, tuve un error con Create y no hallaba cual era. Revise algunos foros y me percate que al momento de hacer un CRUD con laravel las rutas deben estar en plural. Así que dejo un breve guia:
+
+Controller: Singular Model: Singular Routes: Plural (sobretodo si usas CRUD)
+
+Espero que les sirva y no pasen 2 horas (como yo) buscando que esta mal.
+
+
+
+Para el botón de envío se puede usar también el isset($post) y así variar el contenido o texto del botón para los casos de edición o creación, ya que si se recibe información de $post, significa que se desea editar, y en caso contrario, estarémos creando una nueva publicación.
+
+<div class="flex gap-4 items-center justify-between">
+    <a href="{{ route('posts.index') }}" class="text-indigo-600">Volver</a>
+    <button type="submit" class="bg-gray-800 text-white rounded px-4 py-2">{{ isset($post) ? 'Editar Post' : 'Crear Post'}}</button>
+</div>
+
+
+
+tengo problemas para que me carguen los estilos en los tags de input y button, a alguien mas le ha pasado y lo ha podido solucionar?
+
+Si , lo solucione abriendo dos terminales a la vez en una terminal pones el comando
+
+php artisan serve
+
+y en la otra terminal
+
+npm run dev 
+
+o
+
+npm run build
+

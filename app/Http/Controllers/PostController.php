@@ -15,6 +15,14 @@ class PostController extends Controller
         ]);
     }
 
+    public function create(Post $post) {
+        // Retorna a la vists
+        return view('posts.create', ['post' => $post ]);
+    }
+    public function edit(Post $post) {
+    return view('posts.edit', ['post' => $post ]);
+    }
+
     public function destroy(Post $post) {
         $post->delete();
         //consulta directa

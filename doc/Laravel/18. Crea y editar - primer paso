@@ -1,0 +1,43 @@
+18. Crear y Editar  - Primer paso
+
+
+Para la primera configuración de creación y edición.
+
+En el controlador desarrollamos ambos metodos ya que se utilizaran los mismos campos en el formulario
+
+Se generan ambas vistas
+
+create.blade.php
+
+y edit.blade.php
+
+
+Tenemos un archivo auslado que en si es el formulario que se utilizara con ambos metodos de crear y editar.
+
+Modificamos los estilos para el boton de crear y le damos funcionalidad a las vistas de editar y crear
+
+
+Dentro del controlador creamos a los dos metodos 
+create retorna la vista de crear y edit retorna una vista pero con un parametro que es el Id a modificar.
+
+
+
+
+Comentarios:
+
+
+Estoy de acuerdo, deberian explicar que es posts como base de datos. que es Post en mayusculas, que es post como $post o que se almacena en $post y $posts, seguro que los que estamos apenas pisando terrenos de larabel nos ayudaria mucho. Ah! otra cosa, tambien que informen que supoene Larabel, por ahi encontre que al poner el nombre del modelo post.php el larable supone que la base de datos se llama posts en plural
+
+
+Hola, no entiendo bien porque se mezclan los metodos create y store. Se empieza haciendo el llamado a create pero en el form se usa store
+
+CREATE es la instrucción para comenzar la acción de creación y STORE finalmente guarda lo creado. No sé si me di a entender.
+
+El método o función Create sirve para devolver la vista create.blade.php, es una peticion GET.
+
+El método Store sirve para recibir la data del formulario en create.blade.php y es una petición POST.
+
+Funciona igual con Edit (GET) y Update (PATCH/PUT que son alias especiales de POST)
+
+Como dato curioso y para el que le sirva, dentro de nuestro edit.blade el profe crea el formulario con el method"post", sin embargo dentro del form hace una especificación poniendo: "@method('PUT')". Esto con la intención de que el el formulario actualice el dato en la base de datos. ¿Por qué no se pone el PUT directamente en la propiedad 'method' del formulario? Porque los formularios html tienen una forma limitada de entender peticiones por el estilo como PUT, DELETE. Por lo que al especificar @method('PUT') Laravel lo interpreta de manera que actualice en lugar de crear un nuevo registro. 
+
