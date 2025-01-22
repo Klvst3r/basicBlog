@@ -1,0 +1,168 @@
+22. Validción
+
+En este punto sis nosotros enviamos nuestro formulario sin ningun dato el sistema nos mostrara un error, debemos tener esta capa de validación
+
+S en nuestro formualrio de crear enviamos datos vacios, nos dar un error indicando que el titulo no pued estar vacio.
+
+SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'title' cannot be null
+
+insert into `posts` (`title`, `slug`, `body`, `user_id`, `updated_at`, `created_at`) values (?, , ?, 1, 2025-01-22 16:58:41, 2025-01-22 16:58:41)
+
+Es esto precisamente lo que se quiere evitr.
+
+el body no puede estar nulo
+
+
+el error si es que enviamos datos repeqtidos, el titulo eta dulicado
+
+Esta es la configuración qu quiero realizxar al momento de crear la validación
+
+
+//Validación
+        $request->validate([
+            'title' => 'required',
+            'body' => 'required',
+        ]);
+
+Esta mism validación la tenemos en updated_at
+Verificamos en el formulario y par que uedamos apreciar el cambio vmos a colocar un mensaje
+
+Ya que si existe un error respecto al titulo entonces que se imprima
+
+<span>
+    @error('title')
+        {{ $mensaje }}
+    @enderror
+</span>
+
+Quedando el formulario
+
+--
+@csrf
+
+<label for="" class="uppercase text-gray-700 text-xs">Título</label>
+<span class="text-xs text-red-600">@error('title') {{ $message }} @enderror</span>
+    
+<input type="text" name="title" class="rounded border-gray-200 w-full mb-4" value="{{ $post->title }}">
+
+
+<label for="" class="uppercase text-gray-700 text-xs">Contenido</label>
+<span class="text-xs text-red-600">@error('body') {{ $message }} @enderror</span>
+
+<textarea name="body" rows="5" class="rounded border-gray-200 w-full mb-4" >{{ $post->body }}</textarea>
+
+<div class="flex justify-between items-center">
+    <a href="{{ route('posts.index') }}" class="text-indigo-600">Volver</a>
+    <input type="submit" value="Enviar" class="bg-gray-800 text-white rounded px-4 py-2">
+</div>
+
+
+--
+
+
+Si queremos que al momento de tener un error en el body, y regdirija hacia el formulario, no pierda el valor ya almacenado con anterioridad.
+Para ello:
+
+<input type="text" name="title" class="rounded border-gray-200 w-full mb-4" value="{{ old('title', $post->title) }}">
+
+Par mantener el texto lo mismo para el campo body
+<textarea name="body" rows="5" class="rounded border-gray-200 w-full mb-4" >{{ old('body', $post->body) }}</textarea>
+
+Con esta validación funcionapra editr de la misma manera
+
+
+Con esto agregamos nuestra capa de validación
+
+Comentaros:
+
+y si queremos que 
+
+Para cambiar el mensaje de las alertas a español o que diga otra cosa se puede hacer de la siguiente manera. Dentro de la misma validación.
+
+$request->validate([
+            'title'=>'required',
+            'slug'=>'required|unique:posts,slug',
+            'body'=>'required',
+        ],[
+            'title.required'=>'Este campo es requerido',
+            'slug.required'=>'Colocar la url',
+            'slug.unique'=>'La Url debe ser única',
+            'body.required'=>'Se necesita mínimo un párrafo',
+        ]);
+
+    
+
+Excelente clase! Averiguando en la documentación si desean personalizar sus mensajes de error, para no mostrar los que vienen por defecto, simplemente le pasan al método validate, un array como segundo parámetro con los mensajes deseados, así:
+
+
+ //Validación
+        $request->validate([
+            'title' => 'required',
+            'body' => 'required',
+        ],
+        [
+            'title.required' => 'Debe ingresar el titulo',
+            'body.required' => 'Debe ingresar el conenido del posst.',
+        ]
+      );
+
+
+Si quisiera personalizar estos mensajes de validación, idioma, el mensaje como tal, etc. ¿Cómo lo puedo hacer?
+
+$rules=[
+            'title'=>'required',
+            'body' =>'required'
+        ];
+        $customMessages = [
+            'required'=>'El campo :attribute no se puede dejar vacío',
+        ];
+
+$validatedData = $request->validate($rules, $customMessages);
+
+
+
+
+    En el proyecto hay una carpeta con nombre "lang\en", ahi se encuentran 4 archivos con toda la configuracion de mensajes que maneja Laravel. Copia los 4 archivos a una nueva carpeta dentro de lang, y nombrala "es"
+    Ve al repositorio de Laravel en Español de GitHub (carpetas ++/lang/es++)
+    Copia el contenido de esos 4 archivos del repositorio reemplazando a los que estan en tu carpeta de proyecto "lang\es"
+    Indicarle a Laravel que utilice la carpeta ES, modificando el archivo app.php ubicado en la carpeta config. Cambia el parametro 'locale' => 'en' poniendo 'locale' => 'es'
+
+
+
+
+Por si alguien quiere configurar las validaciones a español: Pasos a seguir:
+
+1. Instalar la librería de idioma español:
+
+composer require laravel-lang/common --dev
+
+2. Agregar el idioma español a la aplicación:
+
+php artisan lang:add es
+
+3. Actualizar los archivos de idioma:
+
+php artisan lang:update
+
+4. Configurar el idioma de la aplicación:
+
+4.1. Archivo app.php:
+
+    Abre el archivo app.php ubicado en la raíz de tu proyecto.
+    Busca la sección Application Locale Configuration.
+    Cambia el valor de locale de en a es.
+
+'locale' => 'es',
+
+4.2. Archivo config/app.php:
+
+    Abre el archivo config/app.php.
+    Busca la sección Faker Locale.
+    Cambia el valor de faker_locale de en_US a es_ES.
+
+'faker_locale' => 'es_ES',
+
+
+
+_Generar un dominio virtual (virtual host) con windows y XAMM
+https://www.youtube.com/watch?v=HzygRlPmYQc

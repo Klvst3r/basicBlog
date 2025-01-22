@@ -22,6 +22,19 @@ class PostController extends Controller
     }
 
     public function store(Request $request) {
+
+        //Validación
+        $request->validate([
+            'title' => 'required',
+            'body' => 'required',
+        ],
+        [
+            'title.required' => 'Debe ingresar el titulo',
+            'body.required' => 'Debe ingresar el conenido del posst.',
+        ]
+    
+    );
+
         //Una nueva publicación a partir del usuario logueado que se enuanetra en la case Request $request
         //Cremos el registro
         $post = $request->user()->posts()->create([
@@ -44,6 +57,17 @@ class PostController extends Controller
 
 
     public function update(Request $request, Post $post) {
+
+        //Validación
+        $request->validate([
+            'title' => 'required',
+            'body' => 'required',
+        ],
+        [
+            'title.required' => 'Debe ingresar el titulo',
+            'body.required' => 'Debe ingresar el conenido del posst.',
+        ]
+      );
 
         $post->update([
             'title' => $title = $request->title,
