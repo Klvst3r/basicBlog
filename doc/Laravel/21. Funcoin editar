@@ -1,0 +1,46 @@
+21. Funcion editar
+
+En esta seccion vamos a enforcrnos en la funcion de editar ya que contamos con un formulario y con la ruta, asi que necesitamos el metodo update
+
+
+public function update(Request $request, Post $post) {
+
+Es necesrio recuperar al registro que queremos editar, que es el segundo parmetro
+
+Ya tenemos al post que queremos editar
+Nuestro metodo queda:
+  public function update(Request $request, Post $post) {
+
+        $post->update([
+            'title' => $title = $request->title,
+            'slug' => Str::slug($title),
+            'body' => $request->body,
+        ]);
+
+        // Retorna a la vists
+        return redirect()->route('posts.edit', $post);
+        
+    }
+
+
+Editamos nuestro registro y funciona
+
+Esto es lo necesri por ahora para enfocarnos despues en la funcion de validación
+
+
+
+Comentarios:
+
+Como puedo hacer si deseo actualizar el id del usuario que edita el registro?
+Buenas noches, en una base de datos el único campo que no se debe por ningún motivo ser editado es el campo ID. Un ID debe ser un campo único que no cambia en el tiempo. Si tu usuario cambia de ID y que tu tienes un enlace con otra tabla en este caso el usuario enlazado no es el correcto. Además, modificando el ID tienes la posibilidad de usar un ID ya utilizado y eso no es permitido. Espero que conteste a tu pregunta.
+
+He llegado perfectamente hasta aquí, pero he notado que mis slugs no son únicos aunque se solicitara así en la migración.
+
+Tenía duda de que pasaría con un slug repetido provocaría un error claro, pero queria ver ¿Cómo manajeria laravel ese tipo de cosas? no me refiero a los errores, pero a los campos que el genera y son únicos tipo WordPress detecta que el slug existe y le agrega _n dónde n es el número de veces que se repite.
+
+De hecho son cosas que se programan, también puedes instalar un componente que lo haga por ti como https://github.com/cviebrock/eloquent-sluggable
+
+Inicialmente pueden prevenir que se inserten slug duplicados haciendo la validación (rule) de unique que se implementa en las siguientes clases.
+
+Para lograr una funcionalidad similar a WordPress y permitir duplicados se tendría que programar una consulta antes del guardado tipo $count = Post::where('slug', 'slug')->count() y agregar el resultado a 'slug' => $request->slug . '_' . $count con una condicional si $count es > 0
+

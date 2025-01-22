@@ -42,6 +42,21 @@ class PostController extends Controller
     return view('posts.edit', ['post' => $post ]);
     }
 
+
+    public function update(Request $request, Post $post) {
+
+        $post->update([
+            'title' => $title = $request->title,
+            'slug' => Str::slug($title),
+            'body' => $request->body,
+        ]);
+
+        // Retorna a la vists
+        return redirect()->route('posts.edit', $post);
+        
+    }
+
+
     public function destroy(Post $post) {
         $post->delete();
         //consulta directa
