@@ -1,0 +1,243 @@
+24. Diseño
+
+Diseño del area publica del sistema con clases, revisando el sistema trbajaremos de 
+
+flaticon.com
+
+El area publica es la raiz del proyecto
+
+http://localhost:7000/
+
+Trbajemos con la plantilla
+
+Ahi estaran las configuraciones
+
+Importar el archivo clases
+
+quedando nuestro diseño de la plantilla asi
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Proyecto Web</title>
+
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+</head>
+<body>
+    <div class="container px-4 ms-auto">
+        <header>
+            <div>
+                <a href="{{ route('home') }}">
+                    <img src="" alt="">
+                </a>
+                <form action="">
+                    <input type="text" placeholder="Buscar">
+                </form>
+            </div>
+
+            @auth
+            <a href="{{ route('dashboard') }}">Dashboard</a>
+
+        @else
+            <a href="{{ route('login') }}">Login</a>
+
+        @endauth
+
+        </header>
+
+    </div>
+    
+    @yield('content')
+</body>
+</html>
+
+
+
+Comentaros:
+
+En mi caso tuve error para visualziar la vista que indica el profesor así que me base en la documentación ya que el archivo webpack en mi caso no se encuentra, en cambio de ese archivo está vite.config.js, así que agregue en la ruta resources/js/app.js:
+
+import '../css/app.css'; 
+
+Luego de ello en el template puse
+
+ @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+Les comparto la documentación donde me base para solucionar el problema de visulizar correctamente el template: https://laravel.com/docs/9.x/vite
+
+
+
+
+
+
+Para laravel 9, hoy día, eso se soluciona incluyendo en el
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Proyecto web</title>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+
+
+
+
+En la nueva versión de Laravel ya no están los archivos y configuración exactamente como se muestra en esta clase. Leí la documentación de Laravel aquí y esto fue lo que me funcionó:
+
+Cambios en resources/js/app.js:
+
+import './bootstrap';
+import '../css/app.css';
+
+import Alpine from 'alpinejs';
+
+
+window.Alpine = Alpine;
+
+Alpine.start();
+
+
+
+Cambios en sección head en template.blade.php:
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Proyecto Web</title>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+
+Finalmente, en terminal ejecuté:
+
+npm run dev
+
+Funciona, se corrigen los estilos, pero se queda ejecutando en terminal. Así que cancelé ese proceso y mejor intenté con:
+
+npm run build
+
+Aquí está la imagen:
+
+Y entonces no se bloquea mi terminal y la página ya se observa igual que la del profesor. El resto, lo hice exactamente como indicó el profesor; por supuesto, debes tener la carpeta y las imágenes correctamente en su directorio public.
+
+¿Te funcionó? ¿Me faltó algo? Comenta aquí para ayudar al resto de compañeros.
+
+
+Tuve problemas con la imagen, la documentación indica
+<img src="{{ Vite::asset('resources/imagenes/logo.png') }}">
+
+Debe agregar lo siguiente en el resources/js/app.jspunto de entrada de su aplicación: import.meta.glob([ '../imagenes/', '../fonts/', ]);
+
+https://laravel.com/docs/9.x/vite#working-with-blade-and-routes
+
+
+
+
+Generacion de archivos con las nuevs clases
+npm run dev
+
+
+
+Por alguna razon a mi archivo webpack le estaba faltando una instruccion require lo cual hacia que no se aplicaran los estilos. La tuve que agregar manualmente y ya funciona
+
+
+mix.js('resources/js/app.js', 'public/js').postCss('resources/css/app.css', 'public/css', [
+    require('postcss-import'), //  <- AGREGAR ESTA LINEA
+    require('tailwindcss'),
+    require('autoprefixer'),
+]);
+
+
+
+Para incluir las imágenes según la documentación de Laravel:
+
+    Añadir en el app.js lo siguiente:`import.meta.glob([    '../images/',]);````js import.meta.glob([    '../images/',]);
+
+<!---->
+
+    En el template.blade.php llamar la imágen:<img src="{{ Vite::asset('resources/images/logo.png') }}" class="h-12">```js <img src="{{ Vite::asset('resources/images/logo.png') }}" class="h-12">
+
+
+Para Laravel 11, en el archivo de vista "template.blade.php"
+
+me funciono colocar
+
+@vite(['resources/css/app.css', 'resources/js/app.js'])
+
+En vez del que menciona en el video.
+
+Después para poder compilar los cambios de CSS, ejecutar el siguiente comando en terminal :
+
+$ npm run build
+
+
+--
+
+Para Laravel 11, en el archivo de vista "template.blade.php"
+
+me funciono colocar
+
+@vite(['resources/css/app.css', 'resources/js/app.js'])
+```En vez del que menciona en el video.
+
+Después para poder compilar los cambios de CSS, se ejecuta:
+
+```js
+npm run build
+```¡Espero sirva!
+
+saludos
+
+
+
+@vite(['resources/css/app.css', 'resources/js/app.js'])
+
+para los que estamos en el 2024
+
+y no los aparece el css,
+
+el tema debe estar en que a nosotros ahora se nos installa VITE y no WEBPACK 
+
+
+
+
+no me aparece el archivo webpacj.mix.js por que sea?
+me sale vite
+
+
+
+
+a mi me ha funcionado agregando al final del head de template lo siguiente: @vite('resources/css/app.css')
+
+
+Para los que tienen problemas, yo tome la configuracion de la documentacion (https://laravel.com/docs/9.x/vite)
+
+1- En el archivo ``` resources/js/app.js
+
+mport '../css/app.css';
+
+
+2. en el template, colocar lo siguiente (recomiendo hacerlo entre las etiquetas de la cabecera <head></head>):
+
+@vite(['resources/css/app.css', 'resources/js/app.js'])
+
+3. En la terminal, ejecuten el siguiente comando:
+
+
+npm run build
+
+y listo, problemas de estilo solucionados
+
+
+
+https://github.com/laravel/vite-plugin/blob/main/UPGRADE.md#migrating-from-vite-to-laravel-mix
+
+Por si existe mayor problema con Vite, yo me pase a Mix bajo esta documentación.
+
