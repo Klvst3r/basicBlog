@@ -26,10 +26,12 @@ class PostController extends Controller
         //Validación
         $request->validate([
             'title' => 'required',
+            'slug' => 'required|unique:posts,slug',
             'body' => 'required',
         ],
         [
             'title.required' => 'Debe ingresar el titulo',
+            'slug.required' => 'La URL amigable es requerida',
             'body.required' => 'Debe ingresar el conenido del posst.',
         ]
     
@@ -38,8 +40,10 @@ class PostController extends Controller
         //Una nueva publicación a partir del usuario logueado que se enuanetra en la case Request $request
         //Cremos el registro
         $post = $request->user()->posts()->create([
-            'title' => $title = $request->title,
-            'slug' => Str::slug($title),
+            //'title' => $title = $request->title, //como se lsalvara de manera directa sustituimos con la siguiente liena
+            'title' => $request->title,
+            'slug' => $request->slug,
+            //'slug' => Str::slug($title), //Se hace asi por que interesa aprovechar el bloque de validacion
             'body' => $request->body,
         ]);
 
@@ -61,6 +65,7 @@ class PostController extends Controller
         //Validación
         $request->validate([
             'title' => 'required',
+            'slug' => 'required|unique:posts,slug,' . $post->id,
             'body' => 'required',
         ],
         [
@@ -70,8 +75,8 @@ class PostController extends Controller
       );
 
         $post->update([
-            'title' => $title = $request->title,
-            'slug' => Str::slug($title),
+            'title' => $request->title,
+            'slug' => $request->slug,
             'body' => $request->body,
         ]);
 

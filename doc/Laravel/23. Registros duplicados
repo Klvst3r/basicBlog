@@ -5,3 +5,125 @@ Tabajemos con la finalizaion de este semento.
 
 Para ello nos interesa en este punto.
 
+Evitar que el istema muetre este error, cuando exista un registro ducplicado.
+
+Para ello, vamos a ir a controlador.
+ $post = $request->user()->posts()->create([
+            'title' => $request->title,
+            'slug' => $request->slug,
+            'body' => $request->body,
+        ]);
+
+En el Bloque de validación
+
+En el formulario agregamos una nueva configurción
+
+<label for="" class="uppercase text-gray-700 text-xs">Slug</label>
+<span class="text-xs text-red-600">@error('slug') {{ $message }} @enderror</span>
+    
+<input type="text" name="slug" class="rounded border-gray-200 w-full mb-4" value="{{ old('slug', $post->slug) }}">
+
+
+
+
+Ahora se debe configurar una regla de validación 
+
+
+
+Al repetir un posts con slug repetido indicara que ya esta tomado.
+
+Po lo tanto ya esta validado, ahora hacemos lo mismo con edit.
+Con la siguinete validación le esoty indicando que se vaide pero se ignore l mismo tiempo
+
+
+Se esta indicando que se reuqeirdo, que sea unico en la tabla posts, especificamente el campos slug, 
+
+$request->validate([
+            'title' => 'required',
+            'slug' => 'required|unique:posts,slug,' . $post->id,
+            'body' => 'required',
+        ],
+
+
+Con esto hemos editado y validado correctamente.
+
+Con ello se finaliza todas las tareas administrativs respecto a la tabla de publicaciones.
+
+
+
+Comentarios:
+
+Existe otra forma de validación de formularios llamada Form Request que es muy recomendada, para no tener tanto código en el controlador y tenerlo en otro archivo aparte. Les dejo el enlace de la documentación oficial de Laravel: https://laravel.com/docs/9.x/validation#form-request-validation
+
+
+e puede omitir la creación del campo Slug y simplemente evaluar si el título ya fue utilizado, ya que es a partir de allí que se genera el slug, y entonces si el título es único, el slug también lo será. Esto evita tener un campo extraño en el código y asi mejorar la experiencia del usuario final.
+
+Para cambiar el mensaje de las alertas a español o que diga otra cosa se puede hacer de la siguiente manera. Dentro de la misma validación.
+
+$request->validate([
+            'title'=>'required',
+            'slug'=>'required|unique:posts,slug',
+            'body'=>'required',
+        ],[
+            'title.required'=>'Este campo es requerido',
+            'slug.required'=>'Colocar la url',
+            'slug.unique'=>'La Url debe ser única',
+            'body.required'=>'Se necesita mínimo un párrafo',
+        ]);
+
+Para reutilizar un poco el codigo yo realice una función y la solo invoco en los dos metodos donde ncesitamos validar. ($this->validation(Request $request)
+
+private function validation(Request $request): void
+    {
+        /*
+         * unique:posts -> hace referencia a la tabla posts y dice que sea unico el campo slug
+         * */
+        $request->validate([
+            'title' => 'required',
+            'slug' => 'required|unique:posts,slug',
+            'body' => 'required'
+        ], [
+            //! Esto es para modificar los mensajes de error
+            'title.required' => 'El campo es obligatorio',
+            'slug.required' => 'El campo es obligatorio',
+            'slug.unique' => 'La Url debe ser única',
+            'body.required' => 'El campo es obligatorio'
+        ]);
+    }
+
+Si quieren hacer formatear el slug con la función que teniamos antes lo que podemos hacer es interceptar el request y en esa misma intercepción darle el formato deseado, esto debe de ser antes que pase por las validaciones.
+
+ public function update(Request $request, Post $post) {
+
+        //Intercepción del request para darle formato al slug
+        $request->request->add(['slug' => Str::slug($request->slug)]);
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'slug' => 'required|unique:posts,slug,' . $post->id,
+            'body' => 'required|string',
+            'img' => 'nullable|image|max|2048',
+        ]);
+
+        if($request->hasFile('img')){
+            $userEmail = $request->user()->email;
+            $imagePath = $request->file('img')->store("images/$userEmail", 'public');
+        }
+
+        $imagePath = null;
+
+        $post->update([
+            'title' => $request->title,
+            'slug' => $request->slug,
+            'img' => $imagePath,
+            'body' => $request->body,
+        ]);
+
+        // Retorna a la vista
+        return redirect()->route('posts.edit', $post);
+        
+    }
+
+    para los que se preguntan como hizo el profesor para seleccionar varias variables al mismo tiempo, es primero seleccionando una variable y luego mantener presionado la tecla ALT mientras seleccionas las demas variables que tambien quieres modificar.
+
+
