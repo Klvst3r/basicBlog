@@ -1,0 +1,105 @@
+25. Diseño personalizado.
+
+Continuando con el diseño de la seccion principal, el enfoque principal esta en la plantilla por que mecesitamos una linea despues del encabezado, para que el diseño luzca mejor
+
+
+En la plantilla.
+
+
+Si dejamos encendido el archivo de npm run dev
+
+Podemos dejar encendido con
+
+npm run watch
+
+Sucede lo mismo pero el sistema queda encendido observando cualquir cambio.
+
+
+Trabajamos con la plantilla despues del encabezado.
+
+La idea es generar una lienna con gradiente desde ranprente hasta negro o gris al 60%
+
+De momento al final quedamos asi.
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Proyecto Web</title>
+    
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+
+</head>
+<body>
+    <div class="container px-4 ms-auto">
+        <header class="flex justify-between items-center py-4">
+            <div class="flex items-center flex-grow gap-4">
+                <a href="{{ route('home') }}">
+                    <img src="{{ asset('images/logo.png') }}" class="h-12">
+                </a>
+                <form action="">
+                    <input type="text" placeholder="Buscar">
+                </form>
+            </div>
+
+        @auth
+            <a href="{{ route('dashboard') }}">Dashboard</a>
+
+        @else
+            <a href="{{ route('login') }}">Login</a>
+
+        @endauth
+
+        </header>
+
+        <div class="opacity-60 h-px mb-8" style="
+            background: linear-gradient(to right,
+            rgba(200, 200, 200, 0) 0%, 
+            rgba(200, 200, 200, 1) 30%, 
+            rgba(200, 200, 200, 1) 70%, 
+            rgba(200, 200, 200, 0) 100%
+            );
+        ">
+
+        </div>
+
+        @yield('content')
+
+        <p class="py-16">
+            <img src="{{ asset('images/logo.png') }}" class="h-12 mx-auto">
+        </p>
+
+    </div>
+</body>
+</html>
+
+
+el resultyado es con el logo centrado en el contenido
+
+
+
+Comentarios:
+Para los que tienen problemas al ejecutar npm run watch hagan lo siguiente: npm install autoprefixer@10.4.5 --save-exact
+
+n vite, si el host de desarrollo no está en la misma máquina en que se escribe el código, agregar esto a package.json
+
+"scripts": {
+        "dev": "vite --host ip_del_host_de_ejecución",
+        "build": "vite build"
+
+
+se me olvido borrar la coma en el ultimo rgb y no me mostraba la linea jeje
+
+
+
+Muchachos para los que quieran ver los cambios en tiempo real tienen que abrir dos consolas dentro de VS code, en una de ellas debes ingresar el comando npm run dev y dejarlo corriendo. En la otra consola efectua el php artisan serve y listo. Podras ver los cambios de clases casi al instante sólo recuerda guardar los cambios para que el compilador los pueda detectar.
+
+
+
+Con Vite ya no es necesario ejecutar npm run watch ya que con npm run dev Vite se queda escuchando y refresca automáticamente el navegador (hot reload)
+
