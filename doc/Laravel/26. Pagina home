@@ -1,0 +1,104 @@
+26. Pagina Home
+
+Ahora vamos a trabajar en la página home, basicamente lo que buscamos es que tenga una imagen destacada y tambien el llistado de articulos.
+
+Se modificaran las rutas , las vistas, y controlador.
+
+No se trabajara con la vista de blog.
+
+Quedando unicamente:
+
+Route::controller(PageController::class)->group(function () {
+    Route::get('/',           'home')->name('home');
+    Route::get('blog/{post:slug}', 'post')->name('post');
+});
+
+
+Ahora en el controlador. PageController
+
+ public function home(){
+
+        $posts = Post::latest()->paginate();
+
+        return view('home', ['posts' => $posts]);
+    }
+
+Eiminando el metodo blog
+
+Quedando nuestro controlador completo hasta el momento asi:
+
+
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Post;
+
+use Illuminate\Http\Request;
+
+class PageController extends Controller
+{
+    public function home(){
+
+        $posts = Post::latest()->paginate();
+
+        return view('home', ['posts' => $posts]);
+    }
+
+      public function post(Post $post){
+        return view('post', ['post' => $post]);
+
+    }
+    
+}
+
+
+Probamos la fnionalidad de nuestro dashboard, y sabemos que los post estan ahi, se imprimen de la siguiente manera:
+
+
+Desde la vista home
+
+
+
+Recursos:
+
+página home · platzi/introduccion-laravel-9@dc970f4 · GitHub
+
+
+
+
+La vista home queda finalmente de la siguiente manera:
+
+@extends('template')
+
+@section('content')
+    
+    <div>
+        {{-- Informacion destacada --}}
+    </div>
+
+    <div class="px-4">
+        <h1 class="text-2xl mb-8 text-gray-900">Contenido técnico</h1>
+
+        <div class="grid grid-cols-1 gap-4 mb-4">
+            @foreach ( $posts as $post)
+            <a href="" class="bg-gray-100 rounded-lg px-6 py-4">
+                <p class="text-xs flex items-center gap-2">
+                        <span class="uppercase text-gray-700 bg-gray-200 rounded-full px-2 py-1">Tutorial</span>
+                        <span>{{ $post->created_at->format('d/m/Y') }}</span>
+                </p>
+                
+                <h2 class="text-lg text-gray-900 mt-2">{{ $post->title }}</h2>
+            </a>
+                
+            @endforeach
+        </div>
+
+        {{  $posts->links() }}
+
+    </div>
+
+@endsection
+
+
+

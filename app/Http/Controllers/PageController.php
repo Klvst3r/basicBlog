@@ -9,11 +9,15 @@ use Illuminate\Http\Request;
 class PageController extends Controller
 {
     public function home(){
-        return view('home');
+
+        $posts = Post::latest()->paginate();
+
+        return view('home', ['posts' => $posts]);
     }
     
-    public function blog() {
-        //consulta a la bse de datos
+    //Se elimina este metodo pues ya eta integrado en el home
+    /*public function blog() {
+        //consulta a la bse de datos*/
     /*$posts = [
         ['id' => 1, 'title' => 'PHP', 'slug' => 'php'],
         ['id' => 2, 'title' => 'Laravel', 'slug' => 'laravel']
@@ -29,11 +33,12 @@ class PageController extends Controller
     //dd($post);
 
     //Consulta de datos paginado 
-    $posts = Post::latest()->paginate();
+    /* segunda parte desactva del home 
+    $posts = Post::latest()->paginate(); //esta busqueda ira para home
 
     return view('blog', ['posts' => $posts]);
     }
-
+*/
     /*public function post($slug){
         //Logica de visualizacion de los post
     $posts = [
@@ -47,6 +52,15 @@ class PageController extends Controller
 
     return view('post', ['post' => $posts[$slug]]);
     }*/
+
+    //El metodo post eliminado es el siguiente:
+/*
+    public function blog() {
+    $posts = Post::latest()->paginate(); //esta busqueda ira para home
+
+    return view('blog', ['posts' => $posts]);
+    }
+*/
 
     public function post(Post $post){
         return view('post', ['post' => $post]);
