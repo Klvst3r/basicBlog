@@ -1,0 +1,109 @@
+29. Buscador
+
+Vamos a realizar la configuracion en el formulario de busqueda, 
+
+
+en la plantilla
+template.blade.php
+de momento estos son los unicos cambios.
+
+ <form action="{{ route('home') }}" method="GET" class="flex-grow">
+                    <input type="text" name="search" placeholder="Buscar" value="{{ request('search') }}"
+                        class="border border-gay-200 rounded py-2 px-4 w-1/2"
+                    >
+                </form>
+
+Ahora vamos con el controldor
+
+En el home
+    public function home(Request $request){
+
+        $search = $request->search();
+
+recuperamos el valor de la busqueda y apartir de ahi vamos a nuestra consulta
+
+el controlador quedo asi:
+
+public function home(Request $request){
+
+        $search = $request->search;
+
+        //$posts = Post::latest()->paginate();
+        $posts = Post::where('title', 'LIKE', "%{$search}%")->latest()->paginate();
+
+        return view('home', ['posts' => $posts]);
+    }
+
+En estos cambios ahora puede haber busquedas de posts, y filtrado de publicaciones.
+
+Con esot hacemos una busqueda con diferentes criterios.
+
+
+
+Comentarios:
+¿Cómo buscar sin importar mayúsculas y minúsculas en PostgreSQL?
+
+Si están usando PostgreSQL y usan el where que usó el profe solo les va a mostrar los posts cuyas coincidencias son exactas, por ejemplo, si sus posts son "Ricas empanadas" y "Empanadas de pollo" y buscan "empanadas" solo les va a aparecer "Ricas empanadas" y NO "Empanadas de pollo" porque tiene una mayúscula. Para que PostgreSQL ignore las mayúsculas y minúsculas hay que usar ILIKE en vez de LIKE.
+
+
+De verdad que estas implementaciones tan rápidas con Laravel son impresionantes, solo me quedo la duda de por que en el where, mas preciso en el tercer como parámetro se utilizaron los % % (porcentajes)
+
+where('title', 'LIKE', "%{$search}%")
+
+De ahí en fuera solo es entender el flujo que sigue el valor de la busqueda
+
+
+
+El LIKE operador se usa en una cláusula WHERE para buscar un patrón específico en una columna. Hay dos comodines que se usan a menudo junto con el operador LIKE : El signo de porcentaje (%) representa cero, uno o varios caracteres El signo de subrayado ( _ ) representa un solo carácter
+
+
+
+Eliminar problema de sql inyection
+Si seguimos las indicaciones del framework, este tipo de probemas estan controlados.
+
+Que indicaciones ? por ejemplo usar la directiva en los formularios @csrf, asi mismo los metodos correctos. POST, GET y especificar PUT o PTACH o DELETE segun corresponda. Toda lectura de un request validarla correctamente, creando tus propios Request, para los metodos store, para el metodo update. Usando las correctas directivas dentro de blade, usar el doble corchete cuando corresponda {{ }} . Desaconsejado el uso de php directamente dentro de blade, a menos que no tengas otra opcion.
+
+En resumen, si no nos pasamos de listos queriendo hacer funcionar las cosas a la fuerza y dejando que el framework haga su trabajo, estaremos seguros.
+
+
+
+
+Compañeros, recomendadísimo trabajar formularios con Larevel Collective
+
+{!! Form::open(['route' => 'home', 'method' => 'get']) !!}
+                {!! Form::text('buscar', request('buscar'), ['placeholder' => 'Buscar', 'class' => 'border border-gray-200 rounded py-2 px-4 w-1/2']) !!}
+                {!! Form::close() !!}
+
+Rinde aún mucho más - > https://laravelcollective.com/docs
+
+
+
+
+Hola! necesito ayuda por que cuando hago la consulta en la app no me aparece ningun post y llevo rato estancado en este error apreciaria la ayuda :c aqui esta mi codigo
+
+Este es el controller
+
+class PageController extends Controller
+{
+    public function home (Request $request)
+    {
+        $search = $request->search;
+        $posts = Post::where('title','LIKE',"%{ $search }%")->latest()->paginate();
+        return view('home', ['posts' => $posts]);
+    }
+
+
+este es el template
+
+	<div class="container px-4 mx-auto">
+		<header class="flex justify-between items-center py-4">
+			<div class="flex items-center flex-grow gap-4">
+				<a href="{{ route('home') }}">
+					<img src="{{ asset('images/elephant.png') }}" class="h-12">
+				</a>
+				<form action="{{ route('home') }}" method="GET" class="flex-grow">
+					<input type="text" name="search" placeholder="Buscar" value="{{request('search')}}"
+					class="border border-gray-200 rounded py-2 px-4 w-1/2">
+					
+				</form>
+
