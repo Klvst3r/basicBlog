@@ -1,0 +1,25 @@
+28. Publicación individual
+
+La pagina de publicación es la que permite la visualización en detall el contenido de una publicación.
+
+En home se agrego la url con el parametro de ls  url amigable
+
+<a href="{{ route('post', $post->slug) }}" class="bg-gray-100 rounded-lg px-6 py-4">
+
+
+y en post.blade.php quedo de la siguiente manera:
+
+@extends('template')
+
+@section('content')
+<div class="max-w-3xl mx-auto">
+
+    <h1 class="text-5-xl mb-8">{{ $post->title }}</h1>
+    <p class="leading-loose text-lg text-gray-700">{{ $post->body }}</p>
+
+
+</div>
+    
+@endsection
+
+
