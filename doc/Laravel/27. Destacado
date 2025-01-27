@@ -1,0 +1,124 @@
+27. Destacado
+
+Vamos  continuar trabajando en la pagina home sobre el istado de publicaciones publica una informacion destacada.
+
+https://codersfree.com/posts/pasos-instalar-bootstrap-en-laravel
+
+¿Estás llevando cursos de Laravel y quieres instalar Bootstrap? Bootstrap es un framework CSS gratuito y de código abierto para el desarrollo web front-end responsive y mobile-first. Este contiene diseños basados en HTML, CSS y JavaScript para tipografía, formularios, botones, rutas y otros componentes de interfaz.
+
+Además, cuenta con un sistema de cuadrícula adaptable para el diseño, componentes preconstruidos para patrones de diseño y complementos JS para la interacción con el usuario. En este artículo, te presentaremos a Bootstrap, y cómo instalarlo dentro de tu aplicación Laravel.
+¿Qué es Bootstrap?
+
+Bootstrap acelera y facilita el desarrollo web, ya que su principal objetivo es permitir la construcción de sitios web responsive para dispositivos móviles. También, es compatible con una gran variedad de navegadores y ofrece un diseño fiable mediante componentes reutilizables. Asimismo, es excepcionalmente sencillo de usar y de aprender. 
+
+Este framework utiliza JavaScript, un respaldo incorporado para plugins jQuery y una API JavaScript programática. Puede utilizarse con cualquier IDE o editor PHP gratuito y con cualquier lenguaje y tecnología del lado del servidor, desde ASP.NET y Ruby on Rails hasta PHP.
+
+La interfaz de usuario de Bootstrap es una biblioteca coherente de diseños para aplicaciones web intuitivas. Con este framework, los diseñadores web pueden concentrarse en las mejoras sin estresarse por el diseño, para poner en marcha rápidamente un sitio web interactivo. También ofrece a los diseñadores web una sólida base para crear interesantes temas Bootstrap.
+
+¿Cómo instalar Bootstrap en Laravel?
+
+Ahora que ya sabemos qué es Bootstrap, es momento de instalarlo en tu aplicación Laravel. Bootstrap se puede instalar con Laravel 6, 7, 8 y 9, por lo que el primer paso es instalar la aplicación Laravel en tu computadora. A continuación, te enseñamos cómo instalar Bootstrap:
+#1 Instalar Laravel
+
+Si aún no tienes la aplicación en tu computadora, lo primero que tenemos que hacer es obtener la nueva versión de Laravel 9, utilizando un comando muy fácil. Entonces, abre el símbolo del sistema y ejecuta el siguiente comando:
+
+composer create-project laravel/laravel example-app
+
+#2 Instalar el paquete Laravel ui
+
+El paquete Laravel ui proporciona una forma rápida de armar todas las rutas y vistas que necesitas para la autenticación. Por ello, es importante que los tengas en tu aplicación. Ahora, vamos a ejecutar el siguiente comando para instalar Laravel ui:
+
+composer require laravel/ui
+
+#3 Generar andamiaje
+
+A continuación, se debe instalar un comando en el paquete Laravel ui para crear el andamiaje usando Bootstrap. Entonces, para instalar solo Bootstrap, es necesario emplear el siguiente comando:
+
+php artisan ui bootstrap
+
+Ahora, para instalar el Bootstrap con el andamiaje, debes emplear el siguiente comando:
+
+php artisan ui bootstrap --auth
+
+Te puede interesar: Laravel tips: 4 formas de optimizar el rendimiento de la aplicación Laravel
+#4 Instalar los paquetes de Bootstrap
+paquetes bootstrap
+
+Aquí, necesitamos instalar npm (Node Package Manager), el cual es el gestor de paquetes, módulos o librerías que nos proporciona Nodejs. Entonces, para instalar npm, es fundamental ejecutar el siguiente comando:
+
+npm install
+
+Ahora puedes ver Compilar activo en _variables.scss y app.scss files en resources/sass folder: resources/sass/app.scss. A continuación, tenemos que ejecutar el siguiente comando para la compilación de activos. Esto generará archivos CSS y js min.
+
+/* for development */
+npm run dev
+/* for production */
+npm run production
+
+#5 Usar Bootstrap en el tema
+
+Ahora que ya instalaste Bootstrap, es momento de empezar a utilizarlo de forma correcta. Para ello, puedes utilizar compilar css y js en el archivo de la hoja tema:
+
+<!doctype html>
+<html>
+<head>
+    <!-- Scripts -->
+    <script src="{{ asset('js/app.js') }}" defer></script>
+    <!-- Styles -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+</head>
+<body>
+    <h1>This is example from ItSolutionStuff.com</h1>
+</body>
+</html>
+
+Todos los pasos requeridos se han realizado, ahora tienes que escribir el siguiente comando y pulsar enter para ejecutar la aplicación Laravel:
+
+php artisan serve
+
+La instalación de Bootstrap en Laravel puede brindar varios beneficios para desarrollar páginas web responsive de una forma más fácil. De hecho, es principalmente empleado por los que trabajan en el mundo del diseño.
+
+Ahora que ya sabes cómo instalar Bootstrap en Laravel, es momento de colocarlo en tu computadora y empezar a diseñar páginas web de una forma más sencilla y práctica. 
+
+
+
+Pagina home:
+
+El home que se trabajo queda asi:
+
+@extends('template')
+
+@section('content')
+    
+    <div class="bg-gray-900 px-20 py-16 rounded-lg mb-8 relative overflow-hidden">
+        {{-- Informacion destacada --}}
+        <span class="text-xs uppercase text-gray-700 bg-gray-400 rounded-full px-2 py-1">Programación</span>
+        <h1 class="text-3xl text-white mt-4">Blog</h1>
+        <p class="text-sm text-gray-400 mt">Proyecto de desarrollo web para profesionales</p>
+        <img src="{{ asset('images/dev.png') }}" class="absolute -right-20 -button-20 opacity-20">
+    </div>
+
+    <div class="px-4">
+        <h1 class="text-2xl mb-8 text-gray-900">Contenido técnico</h1>
+
+        <div class="grid grid-cols-1 gap-4 mb-4">
+            @foreach ( $posts as $post)
+            <a href="" class="bg-gray-100 rounded-lg px-6 py-4">
+                <p class="text-xs flex items-center gap-2">
+                        <span class="uppercase text-gray-700 bg-gray-200 rounded-full px-2 py-1">Tutorial</span>
+                        <span>{{ $post->created_at->format('d/m/Y') }}</span>
+                </p>
+                
+                <h2 class="text-lg text-gray-900 mt-2">{{ $post->title }}</h2>
+            </a>
+                
+            @endforeach
+        </div>
+
+        {{  $posts->links() }}
+
+    </div>
+
+@endsection
+
+
