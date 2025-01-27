@@ -12,7 +12,8 @@ class PageController extends Controller
 
         
         //dd($_REQUEST);
-        dd($request->all());
+        //dd($request->all());
+        dd($request->search);
 
         $search = $request->search;
 

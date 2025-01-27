@@ -155,9 +155,9 @@ dd($request->search);
 http://localhost:8000/?search=qui
 
 Resultdo:
-array:1 [▼ // app/Http/Controllers/PageController.php:15
-  "search" => "qui"
-]
+"qui" // app/Http/Controllers/PageController.php:16
+
+
 
 Lo que debemos quearnos es con este concepto:
 
