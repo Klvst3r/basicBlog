@@ -1,0 +1,190 @@
+30. Optimización
+
+Tecnicamente el proyeto esta concluido y funcional
+
+Existe una parte administartiva y de cliente.
+
+
+Podemos visualizar lo siguiente
+
+Quiero instalar un nuevo componente
+
+Ej
+    $ composer require barryvdh/laravel-debugbar --dev
+
+
+
+Salida:
+composer require barryvdh/debugbar --dev
+
+In PackageDiscoveryTrait.php line 383:
+                                                                                                                                                           
+  Could not find a matching version of package barryvdh/debugbar. Check the package spelling, your version constraint and that the package is available i  
+  n a stability which matches your minimum-stability (stable).                                                                                             
+                                                                                                                                                           
+
+require [--dev] [--dry-run] [--prefer-source] [--prefer-dist] [--prefer-install PREFER-INSTALL] [--fixed] [--no-suggest] [--no-progress] [--no-update] [--no-install] [--no-audit] [--audit-format AUDIT-FORMAT] [--update-no-dev] [-w|--update-with-dependencies] [-W|--update-with-all-dependencies] [--with-dependencies] [--with-all-dependencies] [--ignore-platform-req IGNORE-PLATFORM-REQ] [--ignore-platform-reqs] [--prefer-stable] [--prefer-lowest] [-m|--minimal-changes] [--sort-packages] [-o|--optimize-autoloader] [-a|--classmap-authoritative] [--apcu-autoloader] [--apcu-autoloader-prefix APCU-AUTOLOADER-PREFIX] [--] [<packages>...]
+Pero me marca esa leyenda
+
+El error que estás viendo indica que Composer no puede encontrar una versión compatible del paquete barryvdh/debugbar para instalar. Esto puede deberse a varias razones, como una versión incorrecta del paquete, un problema de compatibilidad con Laravel 10, o problemas de configuración de Composer.
+Solución
+
+    Verificar la versión del paquete:
+    Asegúrate de que el paquete barryvdh/debugbar es compatible con Laravel 10. Puedes consultar la página del paquete en Packagist: https://packagist.org/packages/barryvdh/laravel-debugbar
+
+    Instalar la versión correcta:
+    Si hay una versión específica que es compatible con Laravel 10, puedes especificar esa versión en el comando composer require.
+
+    Actualizar Composer:
+    Asegúrate de que tu Composer está actualizado. Puedes actualizar Composer con el siguiente comando:
+    sh
+
+    composer self-update
+
+Pasos a seguir
+
+    Verifica la versión compatible:
+    Consulta la página del paquete en Packagist para ver las versiones disponibles y sus compatibilidades.
+
+    Instala el paquete con la versión correcta:
+    Si encuentras una versión específica que es compatible, instala esa versión. Por ejemplo:
+    sh
+
+composer require barryvdh/laravel-debugbar:^3.7 --dev
+
+Actualizar Composer:
+Si tienes problemas con Composer, actualízalo:
+sh
+
+    composer self-update
+
+Ejemplo de uso
+
+Vamos a intentar instalar una versión específica:
+sh
+
+composer require barryvdh/laravel-debugbar:^3.7 --dev
+
+Si el problema persiste, también puedes intentar modificar tu archivo composer.json para ajustar la configuración de minimum-stability y prefer-stable.
+JSON
+
+{
+    "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.7"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
+
+Después de hacer estos cambios, ejecuta:
+sh
+
+composer update
+
+Esto debería resolver los problemas de instalación del paquete barryvdh/laravel-debugbar.
+
+
+
+Codigo ejecutado:
+
+Al marcar error:
+
+composer require barryvdh/laravel-debugbar:^3.7 --dev
+
+
+Esto me genera un barra de depuración:
+
+Se puede activar o desctivar de acuerdo a la inforamción que tengamos en el archivo .env
+
+
+APP_NAME=Laravel
+APP_ENV=local
+APP_KEY=base64:fnp7PEs8g1/3zP36pWJIJZIE4neCxKBdV6I3EVDE5Z4=
+APP_DEBUG=true
+APP_URL=http://localhost
+
+Si queremos desaparecer:
+APP_DEBUG=false
+
+
+
+La utilizad de este sistema es precismente, analizar que tambien esta llendo respecto a las consultas.
+
+
+
+Ahor si hacemos una configuración adicional.
+
+home
+
+Mostar a los usuarios
+
+
+ <div>
+                    {{ $post->user->name }}
+                </div>
+
+Es importante considerar el tema del rendimiento
+
+
+
+Podemos ir al controlador
+
+y devolver a los usuarios desde el controlaor y no en la vista
+
+ $posts = Post::where('title', 'LIKE', "%{$search}%")
+        ->with('user')
+        ->latest()->paginate();
+
+hora podemos ocupar algo de diseño.
+
+
+en home
+
+
+Par el tema de los iconos buscamos en
+https://heroicons.com/
+
+
+Este tipo de componentes se sosiguen en esta pagina web.
+
+packagist.org
+
+Por ejemplo si queremos trahar con laravel
+escrivios laravel 
+
+si excel
+
+pdf
+
+debugbar
+y encontraremos el componente que instalamos
+
+Y aparecera el comonente instalado recien
+
+ barryvdh/laravel-debugbar
+
+PHP Debugbar integration for Laravel
+
+Este componente de una manera directa como se puede trabajar con el. como se puede instalar activar, este es el bonus
+
+Comantarios:
+Packagist nos provee una amplia gama de opciones ...
+
+
+debes tener composer instalado, y correr el comando en la carpeta raiz de tu proyecto
+
+yo lo solucione así Ejecuta el siguiente comando para limpiar la caché de rutas de Laravel: php artisan route:clear
+
+
+
+Hola team aqui dejo en enlace para instalar del debug
+
+https://packagist.org/packages/barryvdh/laravel-debugbar
+
+comando
+
+composer require barryvdh/laravel-debugbar --dev
+
+
+alguien sabe si esto funciona en laravel 11 composer require barryvdh/laravel-debugbar --dev no me sale la barra 
+
