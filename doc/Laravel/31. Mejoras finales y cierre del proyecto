@@ -1,0 +1,256 @@
+31 Mejorar finales y cierre del proyecto
+
+En la finalización, haremos un rpaso con un pequeño ajuste
+
+Tenemos el sistema
+
+Queremos mejorar lo siguiente
+
+En el dashboard no tenemos acceso al sistema de publicaciones, podemos corregirlo de la siguiente manera
+
+en las rutas,
+
+No tenemos una vista dashboard
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+
+Oerio si estamos trabajando con un sistema de publicaciones, 
+
+por ende podemos hacer la siguiente configuración
+
+una redirección del dashboard hacia el post, la seguirdad no estara aqui, podemos colocarlo en la siguiente linea
+
+Que exista una redireccion del dashboard hacia el post
+
+Route::redirect('dashboard', 'post')->middleware(['auth', 'verified'])->name('dashboard');
+
+No queremos la seguirdad aca por lo que la enviaremos de la siguiente manera:
+
+se puede poner directamete
+
+Route::resource('posts', PostController::class)->middleware(['auth', 'verified'])->except('show');
+
+
+Es decir quien quiera acceder al dashboard puede basicamente recibir la redirección hacia los post, sin embargo se tienen los post portegidos
+
+
+Actualizamos y existe la redirección
+
+Otra modificación es el sistema de botones
+
+
+en el archivo
+views/layouts/navigation.blade.php
+
+
+
+en la seccion del enlace del dashboard
+
+ <!-- Navigation Links -->
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                        {{ __('Dashboard') }}
+                    </x-nav-link>
+                </div>
+            </div>
+
+
+
+Quedando en el template
+
+@auth
+            <a href="{{ route('posts.index') }}">Dashboard</a>
+
+        @else
+            <a href="{{ route('login') }}">Login</a>
+
+        @endauth
+
+
+y en el sistema de navegacción
+
+navigation.blade.php
+ <!-- Navigation Links -->
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('home')">
+                        {{ __('Home') }}
+                    </x-nav-link>
+                </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
+                        {{ __('Posts') }}
+                    </x-nav-link>
+                </div>
+            </div>
+
+
+Para el tema responsivo en este mismo sistema de navegacipn:
+
+!-- Responsive Navigation Menu -->
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('home')">
+                {{ __('Home') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
+                {{ __('Posts') }}
+            </x-responsive-nav-link>
+        </div>
+
+
+
+Despues de esta modificación podremos modificar lo siguiente:
+
+
+Un Framework es basicamente un sistema bastante amigable que traduce en escencia el poder de un lenguaje.
+
+Por ejemplo si escribimos
+
+en PageController:
+
+En el metodo home propio de php 
+
+      dd($_REQUEST);
+
+      y ahora vamos a nuestro proyeto en el navegador y vemos:
+
+
+En el navegador utlizamos algo como:
+
+http://localhost:8000/?labore
+
+
+
+
+
+Devuelve la ssolicitud que esta haciendo el usuario:
+
+array:1 [▼ // app/Http/Controllers/PageController.php:14
+  "labore" => ""
+]
+
+Esto e php directo
+
+
+
+Sin embargo si excribimos
+Accedemos a la misma información desde laravel de la sigueinte forma:
+
+dd($request->all());
+
+
+http://localhost:8000/?search=qui
+
+Resultdo:
+array:1 [▼ // app/Http/Controllers/PageController.php:15
+  "search" => "qui"
+]
+
+Con Laravel puedo con menos codigo acceder
+
+
+dd($request->search);
+
+http://localhost:8000/?search=qui
+
+Resultdo:
+array:1 [▼ // app/Http/Controllers/PageController.php:15
+  "search" => "qui"
+]
+
+Lo que debemos quearnos es con este concepto:
+
+Un framework es basicamente una filosofia y un estandar que proporciona de manera mas amigable lo que el mismo lenguaje te proporciona.
+
+
+Cumpliendo el objetivo de la primera seccion:
+
+Repasar y comprender los conceptos fundamentales de esta tecnologia.
+
+Entender el funcionamiento de una ruta, controlaor, el ciclo de vida de una petición, el manejo y control de base de datos, de listar de paginaciń.
+
+Fisloofia de un framework, su extructura y su proposito.
+
+como podemos aprovechar este poder y estandar.
+
+
+
+Comentarios:
+
+
+
+n último aporte...!
+
+    Como este sistema puede tener varios usuarios distintos y todos tendrán acceso al dashboard o ventana administrativa, es importante restringir el acceso a los posts de otros autores, evitando así que cualquiera elimine publicaciones de otros. Para esto se puede hacer esta pequeña modificación en el archivo PostController :
+
+public function index()
+    {
+				// Esto devueve el id del usuario actual
+        $curret_user = auth()->user()->id;
+        
+        return view('posts.index', [
+						// Esto filtra los resultados por id
+            'posts' => Post::where('user_id', '=',$curret_user)->latest('id')->paginate()
+        ]);
+    }
+
+De esa manera, estaremos viendo solo los post del usuario actual y al mismo tiempo restringiendo la edición y opción de eliminar otras publicaciones distintas a las realizadas por otros.
+
+    Después pueden eliminar los registros falsos de la base de datos e iniciar desde cero. En el archivo DatabaseSeeder.php se deben comentar los llamados al factory:
+
+public function run(): void
+    {
+        // \App\Models\User::factory(1)->create();
+        // \App\Models\Post::factory(80)->create();
+
+        // \App\Models\User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
+    }
+
+Y seguido de eso, desde la terminal se ejecuta:
+
+php artsan migrate:refresh --seed
+
+Recuerde que la ruta para crear los nuevos usuarios es route('register'), la cual puede ser agregada en el archivo login.blade.php de la siguiente forma:
+
+<div class="flex items-center justify-end mt-4 gap-4">
+	@if (Route::has('password.request'))
+	<a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('register') }}">
+	    {{ __('Registrate') }}
+	</a>
+	<a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
+	    {{ __('Olvidaste tu password?') }}
+	</a>
+	@endif
+
+	<x-primary-button class="ml-3">
+	{{ __('Iniciar sesión') }}
+	</x-primary-button>
+</div>
+
+Con eso, el sistema sería mucho mas optimo en cuanto a la experiencia de usuario y seguridad.
+
+
+
+
+Me dí cuenta que al cambiar de página en los posts te modificaba la url por lo que se quitaba la búsqueda que habías realizado, por lo que investigando un poco me dí cuenta que podías modificar la url con la que la barra de paginación te cambia los posts:
+
+$search = $request->search;
+
+$posts = Post::where('title', 'LIKE', "%{$search}%")->latest()->paginate();
+
+$posts->withPath("?search=$search");
+
+Al parece paginate te regresa un objeto con el método withPath que te permite modificar el path con el que se estará modificando la tabla de posts. Espero que a alguien le pueda servir.
+
+
+
+Breeze
+
+Breeze nos permite instalar soporte para modo dark, y si lo instalamos, de forma predeterminada se utiliza pero ¿alguien sabe como cambiar al modo normal?
+
+Estuve probando y está configurado para ambos modos, para desactivarlo hay que quitar el modo oscuro del navegador. . En Firefox es de la siguiente manera: En la esquina superior derecha del navegador, en el menú desplegable, selecciona 'configuración', 
+

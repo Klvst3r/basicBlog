@@ -27,7 +27,7 @@
             </div>
 
         @auth
-            <a href="{{ route('dashboard') }}">Dashboard</a>
+            <a href="{{ route('posts.index') }}">Dashboard</a>
 
         @else
             <a href="{{ route('login') }}">Login</a>
